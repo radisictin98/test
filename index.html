@@ -1163,82 +1163,73 @@ const MAPA=[
   ["Bjela",48],["Tjentište",220],["Pogorelica",108],["Tuzla",240],
   ["Mostar",240],["Ljubljana & Graz",1400],["Visočica",86],
   ["Ozren",30],["Tarčin",70],["Visočica",86],["Trebević",30],
-  ["Pale",52],["Visočica",86],["Split",600]
+  ["Pale",52],["Visočica",86],["Split",600],
+  ["Trebević",34],["Jablanica",120],["Bukovik",60],["Prokoško jezero",180],["Visočica",86]
 ];
 
-function initKrofi(){
-  const KN=KROFI.length;
+function renderKrofi(){
   const list=document.getElementById("krofi-list");
-  if(!list||list.children.length>0)return;
+  if(!list)return;
+  list.innerHTML="";
+  const KN=KROFI.length;
   KROFI.forEach(([rank,name,emoji])=>{
     const h=Math.round(120-(rank/KN)*120);
-    const color="hsl("+h+",65%,50%)";
     const bw=Math.round(((KN-rank+1)/KN)*100);
     const el=document.createElement("div");
-    el.className="krofi-item visible";
-    el.innerHTML='<span class="krofi-rank">'+rank+'.</span>'
-      +'<div style="flex:2;min-width:0">'
-      +'<div class="krofi-name">'+name+'</div>'
-      +'<div class="krofi-bar-wrap"><div class="krofi-bar" style="width:0%;background:'+color+'" data-w="'+bw+'"></div></div>'
-      +'</div>'
-      +'<span class="krofi-emoji">'+emoji+'</span>';
+    el.className="krofi-item";
+    el.style.cssText="opacity:1;transform:none;";
+    el.innerHTML=
+      '<span class="krofi-rank">'+rank+'.</span>'+
+      '<div style="flex:2;min-width:0">'+
+        '<div class="krofi-name">'+name+'</div>'+
+        '<div class="krofi-bar-wrap">'+
+          '<div class="krofi-bar" style="width:'+bw+'%;background:hsl('+h+',65%,50%)"></div>'+
+        '</div>'+
+      '</div>'+
+      '<span class="krofi-emoji">'+emoji+'</span>';
     list.appendChild(el);
   });
-  // Animate bars when section scrolls into view
-  const section=document.querySelector(".krofi-section");
-  if(!section)return;
-  const obs=new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting){
-      list.querySelectorAll(".krofi-bar").forEach((b,i)=>{
-        setTimeout(()=>{b.style.width=b.dataset.w+"%";},i*30);
-      });
-      obs.disconnect();
-    }
-  },{threshold:0.05});
-  obs.observe(section);
 }
 
-function initMapa(){
+function renderMapa(){
   const totalKm=MAPA.reduce((s,[,k])=>s+k,0);
   const maxKm=Math.max(...MAPA.map(([,k])=>k));
   const statsEl=document.getElementById("mapa-stats");
-  if(statsEl&&statsEl.children.length===0){
+  if(statsEl){
     statsEl.innerHTML=
-      '<div class="mapa-stat"><span class="mapa-stat-num">'+totalKm.toLocaleString("bs")+'</span><span class="mapa-stat-label">Km zajedno</span></div>'
-      +'<div class="mapa-stat"><span class="mapa-stat-num">'+MAPA.length+'</span><span class="mapa-stat-label">Putovanja</span></div>'
-      +'<div class="mapa-stat"><span class="mapa-stat-num">'+Math.round(totalKm/MAPA.length).toLocaleString("bs")+'</span><span class="mapa-stat-label">Prosjek km</span></div>';
+      '<div class="mapa-stat"><span class="mapa-stat-num">'+totalKm.toLocaleString("bs")+'</span><span class="mapa-stat-label">Km zajedno</span></div>'+
+      '<div class="mapa-stat"><span class="mapa-stat-num">'+MAPA.length+'</span><span class="mapa-stat-label">Putovanja</span></div>'+
+      '<div class="mapa-stat"><span class="mapa-stat-num">'+Math.round(totalKm/MAPA.length).toLocaleString("bs")+'</span><span class="mapa-stat-label">Prosjek km</span></div>';
   }
   const mlist=document.getElementById("mapa-list");
-  if(!mlist||mlist.children.length>0)return;
+  if(!mlist)return;
+  mlist.innerHTML="";
   MAPA.forEach(([dest,km])=>{
     const bw=Math.round((km/maxKm)*100);
     const el=document.createElement("div");
-    el.className="mapa-item visible";
-    el.innerHTML='<div class="mapa-dot"></div>'
-      +'<div style="flex:1;min-width:0">'
-      +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">'
-      +'<span class="mapa-dest">Sarajevo \u2192 '+dest+'</span>'
-      +'<span class="mapa-km">'+km.toLocaleString("bs")+' km</span>'
-      +'</div>'
-      +'<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:0%" data-w="'+bw+'"></div></div>'
-      +'</div>';
+    el.className="mapa-item";
+    el.style.cssText="opacity:1;transform:none;";
+    el.innerHTML=
+      '<div class="mapa-dot"></div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">'+
+          '<span class="mapa-dest">Sarajevo → '+dest+'</span>'+
+          '<span class="mapa-km">'+km.toLocaleString("bs")+' km</span>'+
+        '</div>'+
+        '<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:'+bw+'%"></div></div>'+
+      '</div>';
     mlist.appendChild(el);
   });
-  const section=document.querySelector(".mapa-section");
-  if(!section)return;
-  const obs=new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting){
-      mlist.querySelectorAll(".mapa-km-fill").forEach((f,i)=>{
-        setTimeout(()=>{f.style.width=f.dataset.w+"%";},i*25);
-      });
-      obs.disconnect();
-    }
-  },{threshold:0.05});
-  obs.observe(section);
 }
 
-initKrofi();
-initMapa();
+// Run immediately + again after main becomes visible
+renderKrofi();
+renderMapa();
+document.getElementById("main").addEventListener("transitionend", function once(){
+  renderKrofi();
+  renderMapa();
+  this.removeEventListener("transitionend", once);
+});
 </script>
 </body>
 </html>
