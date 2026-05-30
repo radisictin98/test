@@ -315,7 +315,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 .scale-bad{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);}
 .scale-good{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);}
 .krofi-list,.mapa-list{display:flex;flex-direction:column;gap:6px;}
-.krofi-item{display:flex;align-items:center;gap:12px;background:var(--dark-3);border:1px solid rgba(201,169,110,0.1);border-radius:10px;padding:11px 14px;opacity:0;transform:translateX(-16px);transition:opacity 0.4s ease,transform 0.4s ease,background 0.2s;}
+.krofi-item{display:flex;align-items:center;gap:12px;background:var(--dark-3);border:1px solid rgba(201,169,110,0.1);border-radius:10px;padding:11px 14px;transition:background 0.2s;}
 .krofi-item.visible{opacity:1;transform:translateX(0);}
 .krofi-item:hover{background:#1f241f;border-color:rgba(201,169,110,0.25);}
 .krofi-rank{font-family:var(--serif);font-size:11px;color:var(--text-muted);min-width:22px;text-align:right;flex-shrink:0;}
@@ -812,7 +812,6 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
       <p class="krofi-sub">Od najlošije do najboljeg — svaka krofna je dio naše priče</p>
     </div>
     <div class="krofi-container">
-      <div class="krofi-scale"><span class="scale-bad">😬 Najgore</span><span class="scale-good">Najbolje 😍</span></div>
       <div class="krofi-list" id="krofi-list"></div>
     </div>
   </section>
@@ -1144,16 +1143,35 @@ function openEaster(){document.getElementById("easter-modal").classList.add("ope
 function closeEaster(){document.getElementById("easter-modal").classList.remove("open");}
 
 const KROFI=[
-  [1,"Čakan","😭"],[2,"Pekara Putnik Jablanica","😖"],[3,"Bihać pekara","😕"],
-  [4,"Pekara Šanf Kladanj","😐"],[5,"Pekara Ukrina","😑"],[6,"Bulevar (lješnjak)","🤨"],
-  [7,"Bulevar (čokoladna)","😶"],[8,"Bulevar (pistacija)","🙂"],[9,"Omiš Studenac","😊"],
-  [10,"Pekara Visoko","😌"],[11,"Penny West Gate","😏"],[12,"Graz pekara","🙃"],
-  [13,"Bulevar (bijela)","😋"],[14,"Pekara Bosfor","😛"],[15,"Pekara Iman (roza)","🤤"],
-  [16,"Pekara Edi brza cesta","😍"],[17,"Pag Novalja pekara","🥰"],[18,"Petrol Slovenija (ogromna)","🤩"],
-  [19,"Pekara Iman (obična)","⭐"],[20,"Tarčin resort (roza)","⭐"],[21,"Pekara Gold (obična)","⭐"],
-  [22,"Pekara Rimski most (roza)","⭐"],[23,"Pekara Edi","⭐"],[24,"Pekara radar Mostar","⭐"],
-  [25,"Pekara Gold (šljokice)","✨"],[26,"Bash (Oreo i Milka)","✨"],[27,"Slatko i slano Cvila","✨"],
-  [28,"Amko Bulevar (marmelada)","💛"],[29,"Mercator Ljubljana","🏆"]
+  [1,"Mercator Ljubljana"],
+  [2,"Amko Bulevar (marmelada)"],
+  [3,"Slatko i slano Cvila"],
+  [4,"Bash (Oreo i Milka)"],
+  [5,"Pekara Gold (šljokice)"],
+  [6,"Pekara radar Mostar"],
+  [7,"Pekara Edi"],
+  [8,"Pekara Rimski most (roza)"],
+  [9,"Pekara Gold (obična)"],
+  [10,"Tarčin resort (roza)"],
+  [11,"Pekara Iman (obična)"],
+  [12,"Petrol Slovenija (ogromna)"],
+  [13,"Pag Novalja pekara"],
+  [14,"Pekara Edi brza cesta"],
+  [15,"Pekara Iman (roza)"],
+  [16,"Pekara Bosfor"],
+  [17,"Bulevar (bijela)"],
+  [18,"Graz pekara"],
+  [19,"Penny West Gate"],
+  [20,"Pekara Visoko"],
+  [21,"Omiš Studenac"],
+  [22,"Bulevar (pistacija)"],
+  [23,"Bulevar (čokoladna)"],
+  [24,"Bulevar (lješnjak)"],
+  [25,"Pekara Ukrina"],
+  [26,"Pekara Šanf Kladanj"],
+  [27,"Bihać pekara"],
+  [28,"Pekara Putnik Jablanica"],
+  [29,"Čakan"]
 ];
 const MAPA=[
   ["Konjic",50],["Trebižat",381],["Stolac",319],["Šturba",381],
@@ -1172,21 +1190,13 @@ function renderKrofi(){
   if(!list)return;
   list.innerHTML="";
   const KN=KROFI.length;
-  KROFI.forEach(([rank,name,emoji])=>{
-    const h=Math.round(120-(rank/KN)*120);
-    const bw=Math.round(((KN-rank+1)/KN)*100);
+  KROFI.forEach(([rank,name])=>{
     const el=document.createElement("div");
     el.className="krofi-item";
     el.style.cssText="opacity:1;transform:none;";
     el.innerHTML=
       '<span class="krofi-rank">'+rank+'.</span>'+
-      '<div style="flex:2;min-width:0">'+
-        '<div class="krofi-name">'+name+'</div>'+
-        '<div class="krofi-bar-wrap">'+
-          '<div class="krofi-bar" style="width:'+bw+'%;background:hsl('+h+',65%,50%)"></div>'+
-        '</div>'+
-      '</div>'+
-      '<span class="krofi-emoji">'+emoji+'</span>';
+      '<span class="krofi-name" style="flex:1">'+name+'</span>';
     list.appendChild(el);
   });
 }
@@ -1222,7 +1232,6 @@ function renderMapa(){
   });
 }
 
-// Run immediately + again after main becomes visible
 renderKrofi();
 renderMapa();
 document.getElementById("main").addEventListener("transitionend", function once(){
