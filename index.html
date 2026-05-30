@@ -49,10 +49,10 @@ body{background:var(--dark);color:var(--text);font-family:var(--sans);font-weigh
 .hero h1 em{font-style:italic;color:var(--gold);}
 .hero-sub{font-family:var(--serif);font-style:italic;font-size:clamp(15px,4vw,20px);color:var(--text-muted);margin-bottom:40px;opacity:0;animation:riseIn 1s ease 1.4s forwards;}
 .divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 40px;opacity:0;animation:riseIn 1s ease 1.5s forwards;}
-.hero-message{max-width:500px;font-family:var(--serif);font-size:clamp(17px,4.5vw,21px);font-weight:300;line-height:1.85;color:var(--text);text-align:center;opacity:0;animation:riseIn 1s ease 1.7s forwards;}
+.hero-message{max-width:500px;width:100%;font-family:var(--serif);font-size:clamp(17px,4.5vw,21px);font-weight:300;line-height:1.85;color:var(--text);text-align:center;margin-left:auto;margin-right:auto;opacity:0;animation:riseIn 1s ease 1.7s forwards;}
 .hero-message strong{color:var(--gold-light);font-weight:400;}
 @keyframes riseIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-.scroll-hint{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:40px;opacity:0;animation:riseIn 1s ease 3s forwards;}
+.scroll-hint{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:36px;opacity:0;animation:riseIn 1s ease 3s forwards;}
 .scroll-hint span{font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);}
 .scroll-arrow{width:1px;height:32px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollAnim 1.5s ease-in-out infinite;}
 @keyframes scrollAnim{0%,100%{transform:scaleY(1);opacity:1;}50%{transform:scaleY(0.5);opacity:0.4;}}
@@ -369,6 +369,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   from{opacity:0;transform:scale(0.6);}
   to{opacity:1;transform:scale(1);}
 }
+.hero-message-bold{font-family:var(--serif);font-size:clamp(18px,5vw,24px);font-weight:400;color:var(--gold-light);text-align:center;margin-top:20px;opacity:0;animation:riseIn 1s ease 2s forwards;}
 </style>
 </head>
 <body>
@@ -425,7 +426,8 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
     <h1>Naša <em>priča</em><br>počela je<br>pod zvijezdama</h1>
     <p class="hero-sub">između vjetrenjača i divljih konja</p>
     <div class="divider"></div>
-    <p class="hero-message">Za neke spontane odluke ne bih očekivao da ce mi promijeniti život, ali izgleda da mogu. Jedan glupi poziv i jedno glupo "da" na taj poziv su me učinili najzaljubljenijom osobom na svijetu, a to nikada nisam mogao očekivati. Eto, prošla je godina od mog odazivanja na taj poziv, a ja i dalje nisam siguran da li mi djeluje kao da je prošlo 5 dana ili 5 godina. <strong>Od tada znam da si ti moja osoba.</strong></p>
+    <p class="hero-message">Za neke spontane odluke ne bih očekivao da ce mi promijeniti život, ali izgleda da mogu. Jedan glupi poziv i jedno glupo "da" na taj poziv su me učinili najzaljubljenijom osobom na svijetu, a to nikada nisam mogao očekivati. Eto, prošla je godina od mog odazivanja na taj poziv, a ja i dalje nisam siguran da li mi djeluje kao da je prošlo 5 dana ili 5 godina.</p>
+    <p class="hero-message-bold">Od tada znam da si ti moja osoba.</p>
     <div class="scroll-hint"><span>Nešto naše</span><div class="scroll-arrow"></div></div>
   </section>
 
