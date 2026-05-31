@@ -921,6 +921,12 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
           </div>
           <div class="slide">
             <div class="slide-img-wrap">
+              <img src="slike/57-MiFerata2.jpg" alt="Bukovik ferata" loading="lazy">
+            </div>
+            <div class="slide-caption"><p>njam</p></div>
+          </div>
+          <div class="slide">
+            <div class="slide-img-wrap">
               <img src="slike/53-MiVranica.jpg" alt="53-MiVranica.jpg" loading="lazy">
             </div>
             <div class="slide-caption"><p>Ti si moj vrh.</p></div>
@@ -930,12 +936,6 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
               <img src="slike/54-MiFerata.jpg" alt="54-MiFerata.jpg" loading="lazy">
             </div>
             <div class="slide-caption"><p>Ti si moja ljubav.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/57-MiFerata2.jpg" alt="Bukovik ferata" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>njam</p></div>
           </div>
           <div class="slide">
             <div class="slide-img-wrap">
@@ -1099,7 +1099,7 @@ function toggleCounter(id){
 const inner=document.getElementById("slides-inner");
 const slides=Array.from(inner.querySelectorAll(".slide"));
 const total=slides.length;
-let cur=0,quizShown=false;
+let cur=0,quizShown=sessionStorage.getItem('quizDone')==='1';
 document.getElementById("tot-slides").textContent=total;
 
 const dotsWrap=document.getElementById("carousel-dots");
@@ -1125,13 +1125,22 @@ function goTo(idx){
   const dots=dotsWrap.querySelectorAll(".dot");
   const dotIdx=cur<MAX_DOTS?cur:MAX_DOTS-1;
   dots.forEach((d,i)=>d.classList.toggle("active",i===dotIdx));
-  if(cur===total-1&&!quizShown){quizShown=true;setTimeout(openQuiz,1000);}
+  if(cur===total-1&&!quizShown){quizShown=true;sessionStorage.setItem('quizDone','1');setTimeout(openQuiz,1000);}
 }
 function carouselNext(){if(cur<total-1)goTo(cur+1);}
 function carouselPrev(){if(cur>0)goTo(cur-1);}
 
-let tx=0,ty=0;
-inner.addEventListener("touchstart",e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+let tx=0,ty=0,tScrollLocked=false;
+inner.addEventListener("touchstart",e=>{
+  tx=e.touches[0].clientX;
+  ty=e.touches[0].clientY;
+  tScrollLocked=false;
+},{passive:true});
+inner.addEventListener("touchmove",e=>{
+  const dx=Math.abs(e.touches[0].clientX-tx);
+  const dy=Math.abs(e.touches[0].clientY-ty);
+  if(dx>dy&&dx>8){tScrollLocked=true;e.preventDefault();}
+},{passive:false});
 inner.addEventListener("touchend",e=>{
   const dx=e.changedTouches[0].clientX-tx;
   const dy=e.changedTouches[0].clientY-ty;
