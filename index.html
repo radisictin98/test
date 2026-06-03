@@ -1857,7 +1857,7 @@ function addSwipe(inner, wrap, onRight, onLeft) {
     }
   }
   inner.addEventListener('touchstart',onTouchStart,{passive:true});
-  inner.addEventListener('touchmove',onTouchMove,{passive:false});
+  inner.addEventListener('touchmove',onTouchMove,{passive:true});
   inner.addEventListener('touchend',onTouchEnd,{passive:true});
 }
 
