@@ -444,6 +444,8 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 
 /* ── ADD KROFNA MODAL ── */
 .fab-wrap{position:fixed;bottom:72px;right:20px;z-index:600;display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+.fab-krofna,.fab-put{display:none;align-items:center;gap:10px;}
+.fab-krofna.fab-visible,.fab-put.fab-visible{display:flex;}
 .fab{width:46px;height:46px;border-radius:50%;border:1px solid rgba(201,169,110,0.4);background:var(--dark-3);color:var(--gold);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s,transform 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
 .fab:hover{background:#252a25;transform:scale(1.08);}
 .fab-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);background:var(--dark-3);padding:4px 10px;border-radius:20px;border:1px solid rgba(201,169,110,0.15);white-space:nowrap;}
@@ -481,6 +483,14 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 .krofi-item .krofi-thumb{width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;}
 .krofi-item .krofi-cam{font-size:14px;opacity:0.25;flex-shrink:0;}
 .krofi-new-badge{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);background:rgba(201,169,110,0.12);padding:2px 6px;border-radius:4px;flex-shrink:0;}
+
+/* DELETE BUTTONS */
+.krofi-item .krofi-del{display:none;background:none;border:none;color:#e05a5a;font-size:16px;cursor:pointer;flex-shrink:0;padding:0 2px;opacity:0.7;}
+.krofi-item:hover .krofi-del{display:block;}
+.krofi-item .krofi-del:hover{opacity:1;}
+.mapa-item .mapa-del{display:none;background:none;border:none;color:#e05a5a;font-size:14px;cursor:pointer;flex-shrink:0;padding:0 4px;opacity:0.7;}
+.mapa-item:hover .mapa-del,.mapa-item:active .mapa-del{display:block;}
+.mapa-del-visible .mapa-del{display:block !important;}
 </style>
 </head>
 <body>
@@ -1070,11 +1080,11 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 
 <!-- FAB BUTTONS -->
 <div class="fab-wrap" id="fab-wrap">
-  <div style="display:flex;align-items:center;gap:10px;">
+  <div class="fab-krofna" id="fab-krofna">
     <span class="fab-label">Dodaj krofnu</span>
     <button class="fab" onclick="openModal('krofna')" title="Dodaj krofnu">🍩</button>
   </div>
-  <div style="display:flex;align-items:center;gap:10px;">
+  <div class="fab-put" id="fab-put">
     <span class="fab-label">Dodaj putovanje</span>
     <button class="fab" onclick="openModal('put')" title="Dodaj putovanje">🗺️</button>
   </div>
@@ -1589,6 +1599,28 @@ async function sbFetch(method, table, body=null, query='') {
   return txt ? JSON.parse(txt) : [];
 }
 
+/* ── FAB VISIBILITY (scroll-based) ── */
+(function(){
+  const krofnaSection = document.querySelector('.krofi-section');
+  const mapaSection   = document.querySelector('.mapa-section');
+  const fabKrofna     = document.getElementById('fab-krofna');
+  const fabPut        = document.getElementById('fab-put');
+  if(!krofnaSection||!mapaSection) return;
+
+  function isInView(el){
+    const r = el.getBoundingClientRect();
+    return r.top < window.innerHeight*0.85 && r.bottom > window.innerHeight*0.15;
+  }
+
+  function updateFABs(){
+    fabKrofna && fabKrofna.classList.toggle('fab-visible', isInView(krofnaSection));
+    fabPut    && fabPut.classList.toggle('fab-visible',    isInView(mapaSection));
+  }
+
+  window.addEventListener('scroll', updateFABs, {passive:true});
+  updateFABs();
+})();
+
 /* ── MODALS ── */
 let krofnaImgBase64 = null;
 
@@ -1629,20 +1661,19 @@ async function saveKrofna() {
   const rang  = parseInt(document.getElementById('k-rang').value);
   if(!naziv) { alert('Unesite naziv!'); return; }
   if(!rang||rang<1) { alert('Unesite poziciju!'); return; }
-  
   const btn = document.getElementById('k-save-btn');
   btn.disabled=true; btn.textContent='Čuvam...';
-  
-  const data = { naziv, rang, slika_base64: krofnaImgBase64||null };
-  const result = await sbFetch('POST','krofne',data);
-  
+  const result = await sbFetch('POST','krofne',{naziv, rang, slika_base64: krofnaImgBase64||null});
   btn.disabled=false; btn.textContent='Sačuvaj';
-  if(result) {
-    closeModal('krofna');
-    await loadKrofneFromDB();
-  } else {
-    alert('Greška pri čuvanju, pokušaj ponovo.');
-  }
+  if(result) { closeModal('krofna'); await loadKrofneFromDB(); }
+  else alert('Greška pri čuvanju, pokušaj ponovo.');
+}
+
+/* ── DELETE KROFNA ── */
+async function deleteKrofna(id, el) {
+  if(!confirm('Obrisati ovu krofnu?')) return;
+  const ok = await sbFetch('DELETE','krofne','',`?id=eq.${id}`);
+  if(ok) await loadKrofneFromDB();
 }
 
 /* ── SAVE PUT ── */
@@ -1651,54 +1682,40 @@ async function savePut() {
   const km   = parseInt(document.getElementById('p-km').value);
   if(!dest) { alert('Unesite destinaciju!'); return; }
   if(!km||km<1) { alert('Unesite kilometre!'); return; }
-  
   const btn = document.getElementById('p-save-btn');
   btn.disabled=true; btn.textContent='Čuvam...';
-  
   const result = await sbFetch('POST','putovanja',{destinacija:dest, km});
-  
   btn.disabled=false; btn.textContent='Sačuvaj';
-  if(result) {
-    closeModal('put');
-    await loadPutovanjaFromDB();
-  } else {
-    alert('Greška pri čuvanju, pokušaj ponovo.');
-  }
+  if(result) { closeModal('put'); await loadPutovanjaFromDB(); }
+  else alert('Greška pri čuvanju, pokušaj ponovo.');
+}
+
+/* ── DELETE PUT ── */
+async function deletePut(id) {
+  if(!confirm('Obrisati ovo putovanje?')) return;
+  const ok = await sbFetch('DELETE','putovanja','',`?id=eq.${id}`);
+  if(ok) await loadPutovanjaFromDB();
 }
 
 /* ── LOAD & RENDER KROFNE ── */
 async function loadKrofneFromDB() {
   const dbKrofne = await sbFetch('GET','krofne','','?select=*&order=rang.asc');
   if(!dbKrofne) return;
-
   const list = document.getElementById('krofi-list');
   if(!list) return;
   list.innerHTML='';
 
-  // Merge static + DB krofne
-  // Static ones first, then DB ones interleaved by rang
   const allKrofne = [];
-  
-  // Add static (from KROFI array) — shift ranks if DB krofna inserted before them
-  const dbRangs = dbKrofne.map(k=>k.rang);
-  
   KROFI.forEach(([staticRang, naziv]) => {
-    // Count how many DB krofne have rang <= staticRang
     const offset = dbKrofne.filter(k=>k.rang<=staticRang).length;
     allKrofne.push({rang: staticRang+offset, naziv, isDB: false});
   });
-  
-  // Add DB krofne
   dbKrofne.forEach(k => {
     allKrofne.push({rang: k.rang, naziv: k.naziv, isDB: true, id: k.id, slika: k.slika_base64});
   });
-  
-  // Sort by rang
   allKrofne.sort((a,b)=>a.rang-b.rang);
-  
-  // Re-number sequentially
   allKrofne.forEach((k,i)=>{ k.rang=i+1; });
-  
+
   const total = allKrofne.length;
   allKrofne.forEach((k) => {
     const h = Math.round(120-(k.rang/total)*120);
@@ -1706,17 +1723,22 @@ async function loadKrofneFromDB() {
     const el = document.createElement('div');
     el.className = 'krofi-item' + (k.slika ? ' has-photo' : '');
     el.style.cssText = 'opacity:1;transform:none;';
-    if(k.slika) el.onclick = () => openKrofnaViewer(k.slika, k.naziv);
-    
+    if(k.slika) el.onclick = (e) => { if(!e.target.classList.contains('krofi-del')) openKrofnaViewer(k.slika, k.naziv); };
+
+    const delBtn = k.isDB
+      ? `<button class="krofi-del" onclick="event.stopPropagation();deleteKrofna('${k.id}')" title="Obriši">✕</button>`
+      : '';
+    const rightEl = k.slika
+      ? `<img class="krofi-thumb" src="${k.slika}" alt="">`
+      : k.isDB ? '<span class="krofi-new-badge">novo</span>' : '';
+
     el.innerHTML =
-      '<span class="krofi-rank">'+k.rang+'.</span>'+
-      '<div style="flex:2;min-width:0">'+
-        '<div class="krofi-name">'+k.naziv+'</div>'+
-        '<div class="krofi-bar-wrap"><div class="krofi-bar" style="width:'+bw+'%;background:hsl('+h+',65%,50%)"></div></div>'+
-      '</div>'+
-      (k.slika ? '<img class="krofi-thumb" src="'+k.slika+'" alt="">' : 
-       k.isDB  ? '<span class="krofi-new-badge">novo</span>' : '<span class="krofi-cam">📷</span>');
-    
+      `<span class="krofi-rank">${k.rang}.</span>`+
+      `<div style="flex:2;min-width:0">`+
+        `<div class="krofi-name">${k.naziv}</div>`+
+        `<div class="krofi-bar-wrap"><div class="krofi-bar" style="width:${bw}%;background:hsl(${h},65%,50%)"></div></div>`+
+      `</div>`+
+      rightEl + delBtn;
     list.appendChild(el);
   });
 }
@@ -1735,61 +1757,71 @@ function closeKrofnaViewer() {
 async function loadPutovanjaFromDB() {
   const dbPuts = await sbFetch('GET','putovanja','','?select=*&order=created_at.asc');
   if(!dbPuts) return;
-  
-  // Combine static + DB
-  const staticMapa = [...MAPA];
+
   const allMapa = [
-    ...staticMapa,
-    ...dbPuts.map(p=>[p.destinacija, p.km])
+    ...MAPA.map(([d,k])=>([d,k,null])),
+    ...dbPuts.map(p=>[p.destinacija, p.km, p.id])
   ];
-  
+
   const totalKm = allMapa.reduce((s,[,k])=>s+k,0);
-  const maxKm = Math.max(...allMapa.map(([,k])=>k));
-  
+  const maxKm   = Math.max(...allMapa.map(([,k])=>k));
+
   const statsEl = document.getElementById('mapa-stats');
   if(statsEl) {
     statsEl.innerHTML =
-      '<div class="mapa-stat"><span class="mapa-stat-num">'+totalKm.toLocaleString('bs')+'</span><span class="mapa-stat-label">Km zajedno</span></div>'+
-      '<div class="mapa-stat"><span class="mapa-stat-num">'+allMapa.length+'</span><span class="mapa-stat-label">Putovanja</span></div>'+
-      '<div class="mapa-stat"><span class="mapa-stat-num">'+Math.round(totalKm/allMapa.length).toLocaleString('bs')+'</span><span class="mapa-stat-label">Prosjek km</span></div>';
+      `<div class="mapa-stat"><span class="mapa-stat-num">${totalKm.toLocaleString('bs')}</span><span class="mapa-stat-label">Km zajedno</span></div>`+
+      `<div class="mapa-stat"><span class="mapa-stat-num">${allMapa.length}</span><span class="mapa-stat-label">Putovanja</span></div>`+
+      `<div class="mapa-stat"><span class="mapa-stat-num">${Math.round(totalKm/allMapa.length).toLocaleString('bs')}</span><span class="mapa-stat-label">Prosjek km</span></div>`;
   }
-  
+
   const mlist = document.getElementById('mapa-list');
   if(!mlist) return;
   mlist.innerHTML='';
-  
-  allMapa.forEach(([dest,km],i)=>{
+
+  allMapa.forEach(([dest,km,dbId])=>{
     const bw = Math.round((km/maxKm)*100);
-    const isNew = i >= staticMapa.length;
+    const isNew = dbId !== null;
     const el = document.createElement('div');
     el.className='mapa-item';
     el.style.cssText='opacity:1;transform:none;';
+
+    const delBtn = isNew
+      ? `<button class="mapa-del" onclick="deletePut('${dbId}')" title="Obriši">✕</button>`
+      : '';
+
     el.innerHTML=
-      '<div class="mapa-dot"></div>'+
-      '<div style="flex:1;min-width:0">'+
-        '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">'+
-          '<span class="mapa-dest">Sarajevo → '+dest+(isNew?' <span style=\"color:var(--gold);font-size:11px;\">(novo)</span>':'')+' </span>'+
-          '<span class="mapa-km">'+km.toLocaleString('bs')+' km</span>'+
-        '</div>'+
-        '<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:'+bw+'%"></div></div>'+
-      '</div>';
+      `<div class="mapa-dot"></div>`+
+      `<div style="flex:1;min-width:0">`+
+        `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">`+
+          `<span class="mapa-dest">Sarajevo → ${dest}${isNew?' <span style="color:var(--gold);font-size:11px;">(novo)</span>':''}</span>`+
+          `<span class="mapa-km">${km.toLocaleString('bs')} km</span>`+
+        `</div>`+
+        `<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:${bw}%"></div></div>`+
+      `</div>`+
+      delBtn;
     mlist.appendChild(el);
   });
 }
 
-/* ── INIT — load from DB after page opens ── */
+/* ── KROFNA IMAGE VIEWER ── */
+function openKrofnaViewer(src, naziv) {
+  document.getElementById('kv-img').src = src;
+  document.getElementById('kv-name').textContent = naziv;
+  document.getElementById('krofna-viewer').classList.add('open');
+}
+function closeKrofnaViewer() {
+  document.getElementById('krofna-viewer').classList.remove('open');
+}
+
+/* ── INIT ── */
 async function initSupabase() {
   await Promise.all([loadKrofneFromDB(), loadPutovanjaFromDB()]);
 }
-
-// Run after main becomes visible
 document.getElementById('main').addEventListener('transitionend', function once(){
   initSupabase();
   this.removeEventListener('transitionend', once);
 });
-// Also run immediately in case main is already visible
-if(document.getElementById('main').style.opacity==='1' || 
-   document.getElementById('main').classList.contains('show')){
+if(document.getElementById('main').classList.contains('show')){
   initSupabase();
 }
 </script>
