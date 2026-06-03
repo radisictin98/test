@@ -472,6 +472,70 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 #kv-overlay.open{display:flex;}
 #kv-overlay img{max-width:100%;max-height:75vh;border-radius:12px;object-fit:contain;}
 #kv-overlay p{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--gold-light);margin-top:14px;text-align:center;}
+
+/* ── DRAG AND DROP ── */
+.krofi-item.dragging, .mapa-item.dragging {
+  opacity: 0.4;
+  background: var(--dark-2) !important;
+}
+.krofi-item.drag-over, .mapa-item.drag-over {
+  border-color: var(--gold) !important;
+  background: #1f261f !important;
+}
+.drag-handle {
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: grab;
+  flex-shrink: 0;
+  padding: 0 4px;
+  opacity: 0.4;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.drag-handle:hover { opacity: 0.8; }
+
+/* ── SWIPE ON LIST ITEMS ── */
+.swipe-row {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+.swipe-row-bg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  pointer-events: none;
+}
+.swipe-row-bg.bg-del {
+  background: #922b21;
+  color: #fff;
+  justify-content: flex-end;
+}
+.swipe-row-bg.bg-edit {
+  background: #1a5276;
+  color: #fff;
+  justify-content: flex-start;
+}
+.swipe-row-inner {
+  position: relative;
+  z-index: 1;
+  border-radius: 10px;
+  background: var(--dark-3);
+  touch-action: pan-y;
+}
+/* override margin on items when inside swipe-row */
+.swipe-row .krofi-item,
+.swipe-row .mapa-item {
+  margin-bottom: 0 !important;
+  border-radius: 10px;
+}
+
 </style>
 </head>
 <body>
@@ -1675,15 +1739,19 @@ async function sbSavePut() {
 
 /* Delete */
 async function sbDelKrofna(id, naziv) {
-  if (!confirm('Obrisati "' + naziv + '"?')) return;
+  if (!confirm('Jeste li sigurni da zelite obrisati "' + naziv + '"?')) return;
   var ok = await sbQ('DELETE', 'krofne', null, '?id=eq.' + id);
   if (ok) sbLoadKrofne();
 }
 
 async function sbDelPut(id, dest) {
-  if (!confirm('Obrisati putovanje u ' + dest + '?')) return;
+  if (!confirm('Jeste li sigurni da zelite obrisati putovanje u ' + dest + '?')) return;
   var ok = await sbQ('DELETE', 'putovanja', null, '?id=eq.' + id);
   if (ok) sbLoadPuts();
+}
+
+function sbEditKrofnaById(k) {
+  sbOpenModal('krofna', k);
 }
 
 /* Load and render krofne */
@@ -1695,20 +1763,39 @@ async function sbLoadKrofne() {
   list.innerHTML = '';
   for (var i = 0; i < data.length; i++) {
     var k = data[i];
-    var el = document.createElement('div');
-    el.className = 'krofi-item';
-    el.style.cssText = 'opacity:1;transform:none;';
     var thumb = k.slika_base64
       ? '<img class="krofi-thumb" src="' + k.slika_base64 + '" onclick="sbViewImg(\'' + k.naziv.replace(/'/g, "\\'") + '\',\'' + k.id + '\')" alt="">'
       : '';
     var dataAttr = 'data-id="' + k.id + '" data-naziv="' + k.naziv.replace(/"/g, '&quot;') + '" data-rang="' + k.rang + '" data-slika="' + (k.slika_base64 ? '1' : '') + '"';
-    el.innerHTML =
+    var item = document.createElement('div');
+    item.className = 'krofi-item';
+    item.style.cssText = 'opacity:1;transform:none;';
+    item.innerHTML =
+      '<span class="drag-handle" title="Drži za premještanje">⠿</span>' +
       '<span class="krofi-rank">' + (i + 1) + '.</span>' +
       '<span class="krofi-name" style="flex:1">' + k.naziv + '</span>' +
       thumb +
       '<button class="sb-edit" ' + dataAttr + ' onclick="sbEditKrofna(this)">✏️</button>' +
       '<button class="sb-del" onclick="sbDelKrofna(\'' + k.id + '\',\'' + k.naziv.replace(/'/g, "\\'") + '\')">✕</button>';
-    list.appendChild(el);
+    // Swipe row wrapper
+    var row = document.createElement('div');
+    row.className = 'swipe-row';
+    row.setAttribute('data-row-id', k.id);
+    row.innerHTML = '<div class="swipe-row-bg bg-edit">Uredi ✏️</div><div class="swipe-row-bg bg-del">Obriši 🗑</div>';
+    var inner = document.createElement('div');
+    inner.className = 'swipe-row-inner';
+    inner.appendChild(item);
+    row.appendChild(inner);
+    list.appendChild(row);
+    // Swipe: left=edit, right=delete
+    (function(kk) {
+      makeSwipeable(row,
+        function() { sbEditKrofnaById(kk); },
+        function() { sbDelKrofna(kk.id, kk.naziv); }
+      );
+    })(k);
+    // Drag
+    makeDraggable(row, 'krofi-list', sbSaveKrofneOrder);
   }
 }
 
@@ -1746,7 +1833,6 @@ async function sbLoadPuts() {
   for (var i = 0; i < data.length; i++) totalKm += data[i].km;
   var maxKm = 0;
   for (var i = 0; i < data.length; i++) if (data[i].km > maxKm) maxKm = data[i].km;
-
   var stats = document.getElementById('mapa-stats');
   if (stats) {
     stats.innerHTML =
@@ -1754,17 +1840,17 @@ async function sbLoadPuts() {
       '<div class="mapa-stat"><span class="mapa-stat-num">' + data.length + '</span><span class="mapa-stat-label">Putovanja</span></div>' +
       '<div class="mapa-stat"><span class="mapa-stat-num">' + Math.round(totalKm / data.length).toLocaleString('bs') + '</span><span class="mapa-stat-label">Prosjek km</span></div>';
   }
-
   var mlist = document.getElementById('mapa-list');
   if (!mlist) return;
   mlist.innerHTML = '';
   for (var i = 0; i < data.length; i++) {
     var p = data[i];
     var bw = Math.round((p.km / maxKm) * 100);
-    var el = document.createElement('div');
-    el.className = 'mapa-item';
-    el.style.cssText = 'opacity:1;transform:none;';
-    el.innerHTML =
+    var item = document.createElement('div');
+    item.className = 'mapa-item';
+    item.style.cssText = 'opacity:1;transform:none;';
+    item.innerHTML =
+      '<span class="drag-handle" title="Drži za premještanje">⠿</span>' +
       '<div class="mapa-dot"></div>' +
       '<div style="flex:1;min-width:0">' +
         '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:6px">' +
@@ -1775,7 +1861,22 @@ async function sbLoadPuts() {
       '</div>' +
       '<button class="sb-edit" onclick="sbOpenModal(\'put\',{id:\'' + p.id + '\',destinacija:\'' + p.destinacija.replace(/'/g, "\\'") + '\',km:' + p.km + '})">✏️</button>' +
       '<button class="sb-del" onclick="sbDelPut(\'' + p.id + '\',\'' + p.destinacija.replace(/'/g, "\\'") + '\')">✕</button>';
-    mlist.appendChild(el);
+    var row = document.createElement('div');
+    row.className = 'swipe-row';
+    row.setAttribute('data-row-id', p.id);
+    row.innerHTML = '<div class="swipe-row-bg bg-edit">Uredi ✏️</div><div class="swipe-row-bg bg-del">Obriši 🗑</div>';
+    var inner = document.createElement('div');
+    inner.className = 'swipe-row-inner';
+    inner.appendChild(item);
+    row.appendChild(inner);
+    mlist.appendChild(row);
+    (function(pp) {
+      makeSwipeable(row,
+        function() { sbOpenModal('put', {id: pp.id, destinacija: pp.destinacija, km: pp.km}); },
+        function() { sbDelPut(pp.id, pp.destinacija); }
+      );
+    })(p);
+    makeDraggable(row, 'mapa-list', sbSavePutsOrder);
   }
 }
 
@@ -1785,6 +1886,189 @@ document.getElementById('main').addEventListener('transitionend', function once(
   sbLoadPuts();
   this.removeEventListener('transitionend', once);
 });
+
+/* ══ DRAG-AND-DROP REORDER ══ */
+var dragSrc = null;
+
+function makeDraggable(el, listId, onReorder) {
+  // Desktop drag
+  el.setAttribute('draggable', 'true');
+  el.addEventListener('dragstart', function(e) {
+    dragSrc = el;
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(function() { el.classList.add('dragging'); }, 0);
+  });
+  el.addEventListener('dragend', function() {
+    el.classList.remove('dragging');
+    document.querySelectorAll('#' + listId + ' .drag-over')
+      .forEach(function(x) { x.classList.remove('drag-over'); });
+  });
+  el.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    if (dragSrc && dragSrc !== el) el.classList.add('drag-over');
+  });
+  el.addEventListener('dragleave', function() { el.classList.remove('drag-over'); });
+  el.addEventListener('drop', function(e) {
+    e.preventDefault();
+    el.classList.remove('drag-over');
+    if (!dragSrc || dragSrc === el) return;
+    var list = document.getElementById(listId);
+    var items = Array.from(list.children);
+    var fromIdx = items.indexOf(dragSrc);
+    var toIdx   = items.indexOf(el);
+    if (fromIdx < toIdx) list.insertBefore(dragSrc, el.nextSibling);
+    else                 list.insertBefore(dragSrc, el);
+    onReorder();
+  });
+
+  // Mobile long-press drag
+  var longPressTimer, touchDragEl, touchClone, startY, lastY;
+  var handle = el.querySelector('.drag-handle');
+  if (!handle) return;
+
+  handle.addEventListener('touchstart', function(e) {
+    var touch = e.touches[0];
+    startY = touch.clientY;
+    longPressTimer = setTimeout(function() {
+      touchDragEl = el;
+      el.classList.add('dragging');
+      // visual clone
+      touchClone = el.cloneNode(true);
+      touchClone.style.cssText = 'position:fixed;z-index:9999;width:' + el.offsetWidth + 'px;opacity:0.85;pointer-events:none;border:1px solid var(--gold);border-radius:10px;background:var(--dark-2);left:' + el.getBoundingClientRect().left + 'px;top:' + el.getBoundingClientRect().top + 'px;';
+      document.body.appendChild(touchClone);
+    }, 400);
+  }, {passive: true});
+
+  handle.addEventListener('touchmove', function(e) {
+    if (!touchDragEl) { clearTimeout(longPressTimer); return; }
+    e.preventDefault();
+    var touch = e.touches[0];
+    lastY = touch.clientY;
+    touchClone.style.top = (lastY - 30) + 'px';
+    // find element under touch
+    touchClone.style.display = 'none';
+    var under = document.elementFromPoint(touch.clientX, touch.clientY);
+    touchClone.style.display = '';
+    var list = document.getElementById(listId);
+    if (!list) return;
+    var target = under && under.closest ? under.closest('#' + listId + ' > div') : null;
+    list.querySelectorAll('.drag-over').forEach(function(x) { x.classList.remove('drag-over'); });
+    if (target && target !== touchDragEl) target.classList.add('drag-over');
+  }, {passive: false});
+
+  handle.addEventListener('touchend', function(e) {
+    clearTimeout(longPressTimer);
+    if (!touchDragEl) return;
+    if (touchClone) { touchClone.remove(); touchClone = null; }
+    el.classList.remove('dragging');
+    var list = document.getElementById(listId);
+    if (!list) { touchDragEl = null; return; }
+    var target = list.querySelector('.drag-over');
+    list.querySelectorAll('.drag-over').forEach(function(x) { x.classList.remove('drag-over'); });
+    if (target && target !== touchDragEl) {
+      var items = Array.from(list.children);
+      var fromIdx = items.indexOf(touchDragEl);
+      var toIdx   = items.indexOf(target);
+      if (fromIdx < toIdx) list.insertBefore(touchDragEl, target.nextSibling);
+      else                 list.insertBefore(touchDragEl, target);
+      onReorder();
+    }
+    touchDragEl = null;
+  }, {passive: true});
+}
+
+/* Save new rang order to Supabase after drag */
+async function sbSaveKrofneOrder() {
+  var items = document.querySelectorAll('#krofi-list > div');
+  var updates = [];
+  items.forEach(function(item, i) {
+    var id = item.getAttribute('data-row-id');
+    if (id) updates.push({id: id, rang: i + 1});
+  });
+  for (var i = 0; i < updates.length; i++) {
+    await sbQ('PATCH', 'krofne', {rang: updates[i].rang}, '?id=eq.' + updates[i].id);
+  }
+  sbLoadKrofne();
+}
+
+async function sbSavePutsOrder() {
+  var items = document.querySelectorAll('#mapa-list > div');
+  var updates = [];
+  items.forEach(function(item, i) {
+    var id = item.getAttribute('data-row-id');
+    if (id) updates.push({id: id, sort_order: i + 1});
+  });
+  // For putovanja we re-save sort via a dedicated field if available,
+  // otherwise just reload (order is by created_at, drag is visual only for now)
+  sbLoadPuts();
+}
+
+/* ══ SWIPE LEFT=EDIT, RIGHT=DELETE ══ */
+function makeSwipeable(rowEl, onSwipeLeft, onSwipeRight) {
+  var inner = rowEl.querySelector('.swipe-row-inner');
+  if (!inner) return;
+  var startX, startY, curX = 0, axis = null, active = false;
+  var THRESH = 80;
+
+  inner.addEventListener('touchstart', function(e) {
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    curX = 0; axis = null; active = true;
+    inner.style.transition = 'none';
+  }, {passive: true});
+
+  inner.addEventListener('touchmove', function(e) {
+    if (!active) return;
+    var dx = e.touches[0].clientX - startX;
+    var dy = e.touches[0].clientY - startY;
+    if (!axis) {
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6)
+        axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    }
+    if (axis !== 'x') return;
+    e.preventDefault();
+    curX = dx;
+    inner.style.transform = 'translateX(' + curX + 'px)';
+    var pct = Math.min(Math.abs(curX) / THRESH, 1);
+    var delBg  = rowEl.querySelector('.bg-del');
+    var editBg = rowEl.querySelector('.bg-edit');
+    if (curX > 0 && onSwipeRight) {
+      if (delBg)  delBg.style.opacity  = pct;
+      if (editBg) editBg.style.opacity = 0;
+    } else if (curX < 0 && onSwipeLeft) {
+      if (editBg) editBg.style.opacity = pct;
+      if (delBg)  delBg.style.opacity  = 0;
+    } else {
+      if (delBg)  delBg.style.opacity = 0;
+      if (editBg) editBg.style.opacity = 0;
+    }
+  }, {passive: false});
+
+  inner.addEventListener('touchend', function() {
+    active = false;
+    inner.style.transition = 'transform 0.25s ease';
+    var delBg  = rowEl.querySelector('.bg-del');
+    var editBg = rowEl.querySelector('.bg-edit');
+    if (curX > THRESH && onSwipeRight) {
+      inner.style.transform = 'translateX(110%)';
+      setTimeout(function() {
+        inner.style.transform = '';
+        if (delBg) delBg.style.opacity = 0;
+        onSwipeRight();
+      }, 260);
+    } else if (curX < -THRESH && onSwipeLeft) {
+      inner.style.transform = '';
+      if (editBg) editBg.style.opacity = 0;
+      onSwipeLeft();
+    } else {
+      inner.style.transform = '';
+      if (delBg)  delBg.style.opacity = 0;
+      if (editBg) editBg.style.opacity = 0;
+    }
+    curX = 0; axis = null;
+  }, {passive: true});
+}
+
 </script>
 </body>
 </html>
