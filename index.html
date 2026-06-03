@@ -1979,14 +1979,10 @@ function makeDraggable(el, listId, onReorder) {
 
 /* Save new rang order to Supabase after drag */
 async function sbSaveKrofneOrder() {
-  var items = document.querySelectorAll('#krofi-list > div');
-  var updates = [];
-  items.forEach(function(item, i) {
-    var id = item.getAttribute('data-row-id');
-    if (id) updates.push({id: id, rang: i + 1});
-  });
-  for (var i = 0; i < updates.length; i++) {
-    await sbQ('PATCH', 'krofne', {rang: updates[i].rang}, '?id=eq.' + updates[i].id);
+  var items = document.querySelectorAll('#krofi-list > div[data-row-id]');
+  for (var i = 0; i < items.length; i++) {
+    var id = items[i].getAttribute('data-row-id');
+    if (id) await sbQ('PATCH', 'krofne', {rang: i + 1}, '?id=eq.' + id);
   }
   sbLoadKrofne();
 }
