@@ -319,8 +319,8 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 .krofi-item.visible{opacity:1;transform:translateX(0);}
 .krofi-item:hover{background:#1f241f;border-color:rgba(201,169,110,0.25);}
 .krofi-rank{font-family:var(--serif);font-size:11px;color:var(--text-muted);min-width:22px;text-align:right;flex-shrink:0;}
-.krofi-bar-wrap{display:none;}
-.krofi-bar{display:none;}
+.krofi-bar-wrap{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
+.krofi-bar{height:100%;border-radius:3px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
 .krofi-name{font-size:13px;color:var(--text);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:2;}
 .krofi-emoji{font-size:16px;flex-shrink:0;}
 /* MAPA */
@@ -444,8 +444,6 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 
 /* ── ADD KROFNA MODAL ── */
 .fab-wrap{position:fixed;bottom:72px;right:20px;z-index:600;display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
-.fab-krofna,.fab-put{display:none;align-items:center;gap:10px;}
-.fab-krofna.fab-visible,.fab-put.fab-visible{display:flex;}
 .fab{width:46px;height:46px;border-radius:50%;border:1px solid rgba(201,169,110,0.4);background:var(--dark-3);color:var(--gold);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s,transform 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
 .fab:hover{background:#252a25;transform:scale(1.08);}
 .fab-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);background:var(--dark-3);padding:4px 10px;border-radius:20px;border:1px solid rgba(201,169,110,0.15);white-space:nowrap;}
@@ -482,60 +480,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 .krofi-item.has-photo:hover{border-color:rgba(201,169,110,0.4);background:#1f261f;}
 .krofi-item .krofi-thumb{width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;}
 .krofi-item .krofi-cam{font-size:14px;opacity:0.25;flex-shrink:0;}
-.krofi-new-badge{display:none;}
-
-/* DELETE BUTTONS */
-/* SWIPE ACTIONS */
-.swipe-item-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:6px;}
-.swipe-item-wrap .swipe-bg{
-  position:absolute;inset:0;display:flex;align-items:center;
-  padding:0 20px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:400;
-  pointer-events:none;transition:opacity 0.2s;opacity:0;
-}
-.swipe-item-wrap .swipe-bg.del-bg{
-  background:#c0392b;color:#fff;justify-content:flex-end;
-}
-.swipe-item-wrap .swipe-bg.edit-bg{
-  background:#2980b9;color:#fff;justify-content:flex-start;
-}
-.swipe-item-wrap .swipe-bg.del-bg::after{content:'🗑 Obriši';}
-.swipe-item-wrap .swipe-bg.edit-bg::before{content:'✏️ Uredi';}
-.swipe-item-wrap .swipe-inner{
-  position:relative;z-index:1;
-  transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);
-  will-change:transform;
-  border-radius:10px;
-}
-/* Remove old hover buttons */
-.krofi-item .krofi-del,.krofi-item .krofi-edit,
-.mapa-item .mapa-del{display:none !important;}
-
-/* ── ADMIN PIN MODAL ── */
-#admin-pin-overlay{
-  position:fixed;inset:0;z-index:9500;
-  background:rgba(0,0,0,0.92);
-  display:none;align-items:center;justify-content:center;
-  padding:32px 24px;
-}
-#admin-pin-overlay.open{display:flex;}
-.admin-pin-box{
-  background:#141814;border:1px solid rgba(201,169,110,0.25);
-  border-radius:20px;padding:32px 28px;
-  max-width:320px;width:100%;text-align:center;
-  animation:quizIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
-}
-.admin-pin-title{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--gold);margin-bottom:6px;}
-.admin-pin-sub{font-size:13px;color:var(--text-muted);margin-bottom:24px;}
-.admin-pin-dots{display:flex;justify-content:center;gap:12px;margin-bottom:24px;}
-.admin-pin-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(201,169,110,0.35);background:transparent;transition:background 0.2s,border-color 0.2s;}
-.admin-pin-dot.filled{background:var(--gold);border-color:var(--gold);}
-.admin-pin-dot.error{background:#e05a5a;border-color:#e05a5a;animation:pinShake 0.4s ease;}
-.admin-pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:240px;margin:0 auto 16px;}
-.admin-pin-key{aspect-ratio:1;background:var(--dark-3);border:1px solid rgba(201,169,110,0.15);border-radius:50%;color:var(--text);font-family:var(--serif);font-size:22px;font-weight:300;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s,border-color 0.15s,transform 0.1s;-webkit-tap-highlight-color:transparent;}
-.admin-pin-key:active{background:#252a25;border-color:var(--gold);transform:scale(0.93);}
-.admin-pin-cancel{background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:8px;letter-spacing:0.1em;text-transform:uppercase;}
-
-/* edit via swipe */
+.krofi-new-badge{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);background:rgba(201,169,110,0.12);padding:2px 6px;border-radius:4px;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -1125,11 +1070,11 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 
 <!-- FAB BUTTONS -->
 <div class="fab-wrap" id="fab-wrap">
-  <div class="fab-krofna" id="fab-krofna">
+  <div style="display:flex;align-items:center;gap:10px;">
     <span class="fab-label">Dodaj krofnu</span>
     <button class="fab" onclick="openModal('krofna')" title="Dodaj krofnu">🍩</button>
   </div>
-  <div class="fab-put" id="fab-put">
+  <div style="display:flex;align-items:center;gap:10px;">
     <span class="fab-label">Dodaj putovanje</span>
     <button class="fab" onclick="openModal('put')" title="Dodaj putovanje">🗺️</button>
   </div>
@@ -1184,66 +1129,6 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   <img id="kv-img" src="" alt="">
   <p class="kv-name" id="kv-name"></p>
   <p class="kv-close">Tapni da zatvoriš</p>
-</div>
-
-
-<!-- ADMIN PIN MODAL -->
-<div id="admin-pin-overlay">
-  <div class="admin-pin-box">
-    <p class="admin-pin-title">🔐 Admin pristup</p>
-    <p class="admin-pin-sub" id="admin-pin-sub">Unesite PIN za izmjenu</p>
-    <div class="admin-pin-dots">
-      <div class="admin-pin-dot" id="ap0"></div>
-      <div class="admin-pin-dot" id="ap1"></div>
-      <div class="admin-pin-dot" id="ap2"></div>
-      <div class="admin-pin-dot" id="ap3"></div>
-      <div class="admin-pin-dot" id="ap4"></div>
-      <div class="admin-pin-dot" id="ap5"></div>
-      <div class="admin-pin-dot" id="ap6"></div>
-      <div class="admin-pin-dot" id="ap7"></div>
-    </div>
-    <div class="admin-pin-pad">
-      <button class="admin-pin-key" onclick="adminPinPress('1')">1</button>
-      <button class="admin-pin-key" onclick="adminPinPress('2')">2</button>
-      <button class="admin-pin-key" onclick="adminPinPress('3')">3</button>
-      <button class="admin-pin-key" onclick="adminPinPress('4')">4</button>
-      <button class="admin-pin-key" onclick="adminPinPress('5')">5</button>
-      <button class="admin-pin-key" onclick="adminPinPress('6')">6</button>
-      <button class="admin-pin-key" onclick="adminPinPress('7')">7</button>
-      <button class="admin-pin-key" onclick="adminPinPress('8')">8</button>
-      <button class="admin-pin-key" onclick="adminPinPress('9')">9</button>
-      <button class="admin-pin-key" style="visibility:hidden"></button>
-      <button class="admin-pin-key" onclick="adminPinPress('0')">0</button>
-      <button class="admin-pin-key" onclick="adminPinDel()">⌫</button>
-    </div>
-    <button class="admin-pin-cancel" onclick="adminPinCancel()">Odustani</button>
-  </div>
-</div>
-
-<!-- EDIT KROFNA MODAL -->
-<div class="modal-overlay" id="modal-edit-krofna" onclick="closeModalOutside(event,'edit-krofna')">
-  <div class="modal-box" style="position:relative;">
-    <button class="modal-close" onclick="closeModal('edit-krofna')">✕</button>
-    <p class="modal-title">✏️ Uredi krofnu</p>
-    <input type="hidden" id="ek-id">
-    <div class="modal-field">
-      <label>Naziv</label>
-      <input type="text" id="ek-naziv" autocomplete="off">
-    </div>
-    <div class="modal-field">
-      <label>Pozicija (1 = najbolja)</label>
-      <input type="number" id="ek-rang" min="1" autocomplete="off">
-    </div>
-    <div class="modal-field">
-      <label>Fotografija</label>
-      <div class="modal-img-preview" id="ek-img-preview" onclick="document.getElementById('ek-file').click()">
-        <span>📷</span><p>Tapni da dodaš/zamijeniš sliku</p>
-      </div>
-      <input type="file" id="ek-file" accept="image/*" capture="environment" style="display:none" onchange="previewEditImg(this)">
-    </div>
-    <button class="modal-btn" id="ek-save-btn" onclick="saveEditKrofna()">Sačuvaj izmjene</button>
-    <button class="modal-cancel" onclick="closeModal('edit-krofna')">Odustani</button>
-  </div>
 </div>
 
 <div class="easter-trigger" onclick="openEaster()">🦆</div>
@@ -1358,7 +1243,6 @@ inner.addEventListener("touchstart",e=>{
   tScrollLocked=false;
 },{passive:true});
 inner.addEventListener("touchmove",e=>{
-  if(document.getElementById("pin-screen")) return;
   const dx=Math.abs(e.touches[0].clientX-tx);
   const dy=Math.abs(e.touches[0].clientY-ty);
   if(dx>dy&&dx>8){tScrollLocked=true;e.preventDefault();}
@@ -1529,8 +1413,104 @@ document.querySelectorAll("[data-scroll]").forEach(el=>obs.observe(el));
 function openEaster(){document.getElementById("easter-modal").classList.add("open");spawnHearts(10,false);}
 function closeEaster(){document.getElementById("easter-modal").classList.remove("open");}
 
+const KROFI=[
+  [1,"Mercator Ljubljana"],
+  [2,"Amko Bulevar (marmelada)"],
+  [3,"Slatko i slano Cvila"],
+  [4,"Bash (Oreo i Milka)"],
+  [5,"Pekara Gold (šljokice)"],
+  [6,"Pekara radar Mostar"],
+  [7,"Pekara Edi"],
+  [8,"Pekara Rimski most (roza)"],
+  [9,"Pekara Gold (obična)"],
+  [10,"Tarčin resort (roza)"],
+  [11,"Pekara Iman (obična)"],
+  [12,"Petrol Slovenija (ogromna)"],
+  [13,"Pag Novalja pekara"],
+  [14,"Pekara Edi brza cesta"],
+  [15,"Pekara Iman (roza)"],
+  [16,"Pekara Bosfor"],
+  [17,"Bulevar (bijela)"],
+  [18,"Graz pekara"],
+  [19,"Penny West Gate"],
+  [20,"Pekara Visoko"],
+  [21,"Omiš Studenac"],
+  [22,"Bulevar (pistacija)"],
+  [23,"Bulevar (čokoladna)"],
+  [24,"Bulevar (lješnjak)"],
+  [25,"Pekara Ukrina"],
+  [26,"Pekara Šanf Kladanj"],
+  [27,"Bihać pekara"],
+  [28,"Pekara Putnik Jablanica"],
+  [29,"Cakan"]
+];
+const MAPA=[
+  ["Konjic",50],["Trebižat",381],["Stolac",319],["Sturba",381],
+  ["Usput put (Bihać → Zavratnica → Pag → Omiš → Split)",1150],
+  ["Mostar",277],["Visočica",102],["Transferzala",102],["Bjela",86],
+  ["Trebević",34],["Nišići",72],["Zelengora",122],["Mostar",240],
+  ["Bjelašnica",48],["Tjentište",220],["Pogorelica",108],["Tuzla",240],
+  ["Mostar",240],["Ljubljana & Graz",1400],["Visočica",86],
+  ["Ozren",30],["Tarčin",70],["Visočica",86],["Trebević",30],
+  ["Pale",52],["Visočica",86],["Split",600],
+  ["Trebević",34],["Jablanica",120],["Bukovik",60],["Prokoško jezero",180],["Visočica",86],
+  ["Bukovik ferata",60]
+];
 
-/* data loaded from Supabase */);
+function renderKrofi(){
+  const list=document.getElementById("krofi-list");
+  if(!list)return;
+  list.innerHTML="";
+  const KN=KROFI.length;
+  KROFI.forEach(([rank,name])=>{
+    const el=document.createElement("div");
+    el.className="krofi-item";
+    el.style.cssText="opacity:1;transform:none;";
+    el.innerHTML=
+      '<span class="krofi-rank">'+rank+'.</span>'+
+      '<span class="krofi-name" style="flex:1">'+name+'</span>';
+    list.appendChild(el);
+  });
+}
+
+function renderMapa(){
+  const totalKm=MAPA.reduce((s,[,k])=>s+k,0);
+  const maxKm=Math.max(...MAPA.map(([,k])=>k));
+  const statsEl=document.getElementById("mapa-stats");
+  if(statsEl){
+    statsEl.innerHTML=
+      '<div class="mapa-stat"><span class="mapa-stat-num">'+totalKm.toLocaleString("bs")+'</span><span class="mapa-stat-label">Km zajedno</span></div>'+
+      '<div class="mapa-stat"><span class="mapa-stat-num">'+MAPA.length+'</span><span class="mapa-stat-label">Putovanja</span></div>'+
+      '<div class="mapa-stat"><span class="mapa-stat-num">'+Math.round(totalKm/MAPA.length).toLocaleString("bs")+'</span><span class="mapa-stat-label">Prosjek km</span></div>';
+  }
+  const mlist=document.getElementById("mapa-list");
+  if(!mlist)return;
+  mlist.innerHTML="";
+  MAPA.forEach(([dest,km])=>{
+    const bw=Math.round((km/maxKm)*100);
+    const el=document.createElement("div");
+    el.className="mapa-item";
+    el.style.cssText="opacity:1;transform:none;";
+    el.innerHTML=
+      '<div class="mapa-dot"></div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">'+
+          '<span class="mapa-dest">Sarajevo → '+dest+'</span>'+
+          '<span class="mapa-km">'+km.toLocaleString("bs")+' km</span>'+
+        '</div>'+
+        '<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:'+bw+'%"></div></div>'+
+      '</div>';
+    mlist.appendChild(el);
+  });
+}
+
+renderKrofi();
+renderMapa();
+document.getElementById("main").addEventListener("transitionend", function once(){
+  renderKrofi();
+  renderMapa();
+  this.removeEventListener("transitionend", once);
+});
 
 /* POJEST CU TE */
 function pojestCuTe(){
@@ -1589,7 +1569,6 @@ function pojestCuTe(){
 ══════════════════════════════════════ */
 const SB_URL = 'https://xwiuxydurinuzyeihbkq.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3aXV4eWR1cmludXp5ZWloYmtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NzQzNTYsImV4cCI6MjA5NjA1MDM1Nn0.P6VZAU5jld8txhZPXvQVptoyY8gGc3snMisSL5sZbYs';
-const ADMIN_PIN = ['0','1','1','9','1','9','1','1'].join('');
 
 async function sbFetch(method, table, body=null, query='') {
   const opts = {
@@ -1604,88 +1583,13 @@ async function sbFetch(method, table, body=null, query='') {
   if(body) opts.body = JSON.stringify(body);
   const r = await fetch(SB_URL + '/rest/v1/' + table + query, opts);
   if(!r.ok) { const t=await r.text(); console.error('SB error',r.status,t); return null; }
-  if(method==='DELETE'||method==='PATCH') return true;
+  if(method==='DELETE') return true;
   const txt = await r.text();
   return txt ? JSON.parse(txt) : [];
 }
 
-/* ── FAB VISIBILITY ── */
-(function(){
-  const krofnaSection = document.querySelector('.krofi-section');
-  const mapaSection   = document.querySelector('.mapa-section');
-  const fabKrofna     = document.getElementById('fab-krofna');
-  const fabPut        = document.getElementById('fab-put');
-  if(!krofnaSection||!mapaSection) return;
-  function isInView(el){
-    const r = el.getBoundingClientRect();
-    return r.top < window.innerHeight*0.85 && r.bottom > window.innerHeight*0.15;
-  }
-  function updateFABs(){
-    fabKrofna && fabKrofna.classList.toggle('fab-visible', isInView(krofnaSection));
-    fabPut    && fabPut.classList.toggle('fab-visible',    isInView(mapaSection));
-  }
-  window.addEventListener('scroll', updateFABs, {passive:true});
-  updateFABs();
-})();
-
-/* ── ADMIN PIN ── */
-let adminPinEntered = '';
-let adminPinCallback = null;
-
-function requireAdminPin(label, callback) {
-  adminPinEntered = '';
-  adminPinCallback = callback;
-  document.getElementById('admin-pin-sub').textContent = label;
-  for(let i=0;i<8;i++) {
-    const d=document.getElementById('ap'+i);
-    d.classList.remove('filled','error');
-  }
-  document.getElementById('admin-pin-overlay').classList.add('open');
-}
-
-function adminPinPress(k) {
-  if(adminPinEntered.length >= 8) return;
-  adminPinEntered += k;
-  updateAdminDots();
-  if(adminPinEntered.length === 8) {
-    if(adminPinEntered === ADMIN_PIN) {
-      document.getElementById('admin-pin-overlay').classList.remove('open');
-      const cb = adminPinCallback;
-      adminPinEntered = '';
-      adminPinCallback = null;
-      cb && cb();
-    } else {
-      for(let i=0;i<8;i++) document.getElementById('ap'+i).classList.add('error');
-      setTimeout(()=>{ adminPinEntered=''; updateAdminDots(); }, 700);
-    }
-  }
-}
-function adminPinDel() {
-  if(adminPinEntered.length > 0) { adminPinEntered = adminPinEntered.slice(0,-1); updateAdminDots(); }
-}
-function adminPinCancel() {
-  adminPinEntered='';
-  adminPinCallback=null;
-  document.getElementById('admin-pin-overlay').classList.remove('open');
-}
-function updateAdminDots() {
-  for(let i=0;i<8;i++) {
-    const d=document.getElementById('ap'+i);
-    d.classList.toggle('filled', i<adminPinEntered.length);
-    d.classList.remove('error');
-  }
-}
-document.addEventListener('keydown', e=>{
-  if(document.getElementById('admin-pin-overlay').classList.contains('open')) {
-    if(e.key>='0'&&e.key<='9') adminPinPress(e.key);
-    if(e.key==='Backspace') adminPinDel();
-    if(e.key==='Escape') adminPinCancel();
-  }
-});
-
-/* ── ADD MODALS ── */
+/* ── MODALS ── */
 let krofnaImgBase64 = null;
-let editImgBase64   = null;
 
 function openModal(type) {
   document.getElementById('modal-'+type).classList.add('open');
@@ -1694,7 +1598,7 @@ function openModal(type) {
     document.getElementById('k-rang').value='';
     document.getElementById('k-img-preview').innerHTML='<span>📷</span><p>Tapni da dodaš sliku</p>';
     krofnaImgBase64=null;
-  } else if(type==='put') {
+  } else {
     document.getElementById('p-dest').value='';
     document.getElementById('p-km').value='';
   }
@@ -1705,278 +1609,186 @@ function closeModal(type) {
 function closeModalOutside(e, type) {
   if(e.target===document.getElementById('modal-'+type)) closeModal(type);
 }
+
 function previewKrofnaImg(input) {
-  const file=input.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=(e)=>{ krofnaImgBase64=e.target.result; document.getElementById('k-img-preview').innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">'; };
-  reader.readAsDataURL(file);
-}
-function previewEditImg(input) {
-  const file=input.files[0]; if(!file) return;
-  const reader=new FileReader();
-  reader.onload=(e)=>{ editImgBase64=e.target.result; document.getElementById('ek-img-preview').innerHTML='<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">'; };
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    krofnaImgBase64 = e.target.result;
+    const prev = document.getElementById('k-img-preview');
+    prev.innerHTML = '<img src="'+e.target.result+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
+  };
   reader.readAsDataURL(file);
 }
 
-/* ── SAVE NEW KROFNA ── */
+/* ── SAVE KROFNA ── */
 async function saveKrofna() {
-  const naziv=document.getElementById('k-naziv').value.trim();
-  const rang=parseInt(document.getElementById('k-rang').value);
+  const naziv = document.getElementById('k-naziv').value.trim();
+  const rang  = parseInt(document.getElementById('k-rang').value);
   if(!naziv) { alert('Unesite naziv!'); return; }
   if(!rang||rang<1) { alert('Unesite poziciju!'); return; }
-  const btn=document.getElementById('k-save-btn');
+  
+  const btn = document.getElementById('k-save-btn');
   btn.disabled=true; btn.textContent='Čuvam...';
-  const result=await sbFetch('POST','krofne',{naziv,rang,slika_base64:krofnaImgBase64||null});
+  
+  const data = { naziv, rang, slika_base64: krofnaImgBase64||null };
+  const result = await sbFetch('POST','krofne',data);
+  
   btn.disabled=false; btn.textContent='Sačuvaj';
-  if(result) { closeModal('krofna'); await loadKrofneFromDB(); }
-  else alert('Greška pri čuvanju.');
+  if(result) {
+    closeModal('krofna');
+    await loadKrofneFromDB();
+  } else {
+    alert('Greška pri čuvanju, pokušaj ponovo.');
+  }
 }
 
-/* ── OPEN EDIT KROFNA ── */
-function openEditKrofna(id, naziv, rang, slika) {
-  requireAdminPin('Unesite PIN za uređivanje', ()=>{
-    document.getElementById('ek-id').value=id;
-    document.getElementById('ek-naziv').value=naziv;
-    document.getElementById('ek-rang').value=rang;
-    editImgBase64=null;
-    const prev=document.getElementById('ek-img-preview');
-    if(slika) prev.innerHTML='<img src="'+slika+'" style="width:100%;height:100%;object-fit:cover;border-radius:8px;">';
-    else prev.innerHTML='<span>📷</span><p>Tapni da dodaš sliku</p>';
-    document.getElementById('modal-edit-krofna').classList.add('open');
-  });
-}
-
-/* ── SAVE EDIT KROFNA ── */
-async function saveEditKrofna() {
-  const id=document.getElementById('ek-id').value;
-  const naziv=document.getElementById('ek-naziv').value.trim();
-  const rang=parseInt(document.getElementById('ek-rang').value);
-  if(!naziv||!rang||rang<1) { alert('Popunite sva polja!'); return; }
-  const btn=document.getElementById('ek-save-btn');
-  btn.disabled=true; btn.textContent='Čuvam...';
-  const patch={naziv,rang};
-  if(editImgBase64) patch.slika_base64=editImgBase64;
-  const ok=await sbFetch('PATCH','krofne',patch,`?id=eq.${id}`);
-  btn.disabled=false; btn.textContent='Sačuvaj izmjene';
-  if(ok) { closeModal('edit-krofna'); await loadKrofneFromDB(); }
-  else alert('Greška pri čuvanju.');
-}
-
-/* ── DELETE KROFNA (with PIN) ── */
-function deleteKrofna(id, naziv) {
-  requireAdminPin('PIN za brisanje: '+naziv, async ()=>{
-    const ok=await sbFetch('DELETE','krofne','',`?id=eq.${id}`);
-    if(ok) await loadKrofneFromDB();
-  });
-}
-
-/* ── SAVE NEW PUTOVANJE ── */
+/* ── SAVE PUT ── */
 async function savePut() {
-  const dest=document.getElementById('p-dest').value.trim();
-  const km=parseInt(document.getElementById('p-km').value);
+  const dest = document.getElementById('p-dest').value.trim();
+  const km   = parseInt(document.getElementById('p-km').value);
   if(!dest) { alert('Unesite destinaciju!'); return; }
   if(!km||km<1) { alert('Unesite kilometre!'); return; }
-  const btn=document.getElementById('p-save-btn');
+  
+  const btn = document.getElementById('p-save-btn');
   btn.disabled=true; btn.textContent='Čuvam...';
-  const result=await sbFetch('POST','putovanja',{destinacija:dest,km});
+  
+  const result = await sbFetch('POST','putovanja',{destinacija:dest, km});
+  
   btn.disabled=false; btn.textContent='Sačuvaj';
-  if(result) { closeModal('put'); await loadPutovanjaFromDB(); }
-  else alert('Greška pri čuvanju.');
+  if(result) {
+    closeModal('put');
+    await loadPutovanjaFromDB();
+  } else {
+    alert('Greška pri čuvanju, pokušaj ponovo.');
+  }
 }
 
-/* ── DELETE PUTOVANJE (with PIN) ── */
-function deletePut(id, dest) {
-  requireAdminPin('PIN za brisanje: '+dest, async ()=>{
-    const ok=await sbFetch('DELETE','putovanja','',`?id=eq.${id}`);
-    if(ok) await loadPutovanjaFromDB();
-  });
-}
-
-/* ── SWIPE HELPER ── */
-function addSwipe(inner, wrap, onRight, onLeft) {
-  let startX=0, startY=0, curX=0, swiping=false, axisLocked=false, axis=null;
-  const THRESHOLD=80;
-
-  function getDelBg(){ return wrap.querySelector('.del-bg'); }
-  function getEditBg(){ return wrap.querySelector('.edit-bg'); }
-
-  function onTouchStart(e){
-    startX=e.touches[0].clientX;
-    startY=e.touches[0].clientY;
-    curX=0; swiping=true; axisLocked=false; axis=null;
-    inner.style.transition='none';
-  }
-  function onTouchMove(e){
-    if(!swiping) return;
-    const dx=e.touches[0].clientX-startX;
-    const dy=e.touches[0].clientY-startY;
-    if(!axisLocked){
-      if(Math.abs(dx)>8||Math.abs(dy)>8){
-        axis=Math.abs(dx)>Math.abs(dy)?'x':'y';
-        axisLocked=true;
-      }
-    }
-    if(axis!=='x') return;
-    e.preventDefault();
-    curX=dx;
-    inner.style.transform=`translateX(${curX}px)`;
-    const pct=Math.min(Math.abs(curX)/THRESHOLD,1);
-    const delBg=getDelBg(), editBg=getEditBg();
-    if(curX>0&&onRight){ // swipe right = delete
-      if(delBg) delBg.style.opacity=pct;
-      if(editBg) editBg.style.opacity=0;
-    } else if(curX<0&&onLeft){ // swipe left = edit
-      if(editBg) editBg.style.opacity=pct;
-      if(delBg) delBg.style.opacity=0;
-    } else {
-      if(delBg) delBg.style.opacity=0;
-      if(editBg) editBg.style.opacity=0;
-    }
-  }
-  function onTouchEnd(){
-    if(!swiping||axis!=='x'){
-      inner.style.transition=''; inner.style.transform=''; swiping=false; return;
-    }
-    swiping=false;
-    inner.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';
-    const delBg=getDelBg(), editBg=getEditBg();
-    if(curX>THRESHOLD&&onRight){
-      inner.style.transform=`translateX(110%)`;
-      setTimeout(()=>{
-        inner.style.transition=''; inner.style.transform='';
-        if(delBg) delBg.style.opacity=0;
-        onRight();
-      },300);
-    } else if(curX<-THRESHOLD&&onLeft){
-      inner.style.transform='';
-      if(editBg) editBg.style.opacity=0;
-      onLeft();
-    } else {
-      inner.style.transform='';
-      if(delBg) delBg.style.opacity=0;
-      if(editBg) editBg.style.opacity=0;
-    }
-  }
-  inner.addEventListener('touchstart',onTouchStart,{passive:true});
-  inner.addEventListener('touchmove',function(e){
-    if(document.getElementById('pin-screen')) return;
-    onTouchMove(e);
-  },{passive:false});
-  inner.addEventListener('touchend',onTouchEnd,{passive:true});
-}
-
-/* ── LOAD & RENDER KROFNE (all from DB) ── */
+/* ── LOAD & RENDER KROFNE ── */
 async function loadKrofneFromDB() {
-  const krofne=await sbFetch('GET','krofne','','?select=*&order=rang.asc');
-  if(!krofne) return;
-  const list=document.getElementById('krofi-list');
+  const dbKrofne = await sbFetch('GET','krofne','','?select=*&order=rang.asc');
+  if(!dbKrofne) return;
+
+  const list = document.getElementById('krofi-list');
   if(!list) return;
   list.innerHTML='';
-  const total=krofne.length;
-  krofne.forEach((k,i)=>{
-    const rang=i+1;
-    const h=Math.round(120-(rang/total)*120);
-    const bw=Math.round(((total-rang+1)/total)*100);
 
-    // Inner item
-    const item=document.createElement('div');
-    item.className='krofi-item'+(k.slika_base64?' has-photo':'');
-    item.style.cssText='opacity:1;transform:none;border-radius:10px;';
-    item.innerHTML=
-      `<span class="krofi-rank">${rang}.</span>`+
-      `<div style="flex:2;min-width:0">`+
-        `<div class="krofi-name">${k.naziv}</div>`+
-        
-      `</div>`+
-      (k.slika_base64?`<img class="krofi-thumb" src="${k.slika_base64}" alt="">`:'');
-
-    if(k.slika_base64) item.addEventListener('click', ()=>openKrofnaViewer(k.slika_base64,k.naziv));
-
-    // Wrap with swipe
-    const wrap=document.createElement('div');
-    wrap.className='swipe-item-wrap';
-    const delBg=document.createElement('div');  delBg.className='swipe-bg del-bg';
-    const editBg=document.createElement('div'); editBg.className='swipe-bg edit-bg';
-    const inner=document.createElement('div');  inner.className='swipe-inner';
-    inner.appendChild(item);
-    wrap.appendChild(delBg);
-    wrap.appendChild(editBg);
-    wrap.appendChild(inner);
-    list.appendChild(wrap);
-
-    addSwipe(inner, wrap,
-      ()=>deleteKrofna(k.id, k.naziv),
-      ()=>openEditKrofna(k.id, k.naziv, k.rang, k.slika_base64||'')
-    );
+  // Merge static + DB krofne
+  // Static ones first, then DB ones interleaved by rang
+  const allKrofne = [];
+  
+  // Add static (from KROFI array) — shift ranks if DB krofna inserted before them
+  const dbRangs = dbKrofne.map(k=>k.rang);
+  
+  KROFI.forEach(([staticRang, naziv]) => {
+    // Count how many DB krofne have rang <= staticRang
+    const offset = dbKrofne.filter(k=>k.rang<=staticRang).length;
+    allKrofne.push({rang: staticRang+offset, naziv, isDB: false});
+  });
+  
+  // Add DB krofne
+  dbKrofne.forEach(k => {
+    allKrofne.push({rang: k.rang, naziv: k.naziv, isDB: true, id: k.id, slika: k.slika_base64});
+  });
+  
+  // Sort by rang
+  allKrofne.sort((a,b)=>a.rang-b.rang);
+  
+  // Re-number sequentially
+  allKrofne.forEach((k,i)=>{ k.rang=i+1; });
+  
+  const total = allKrofne.length;
+  allKrofne.forEach((k) => {
+    const h = Math.round(120-(k.rang/total)*120);
+    const bw = Math.round(((total-k.rang+1)/total)*100);
+    const el = document.createElement('div');
+    el.className = 'krofi-item' + (k.slika ? ' has-photo' : '');
+    el.style.cssText = 'opacity:1;transform:none;';
+    if(k.slika) el.onclick = () => openKrofnaViewer(k.slika, k.naziv);
+    
+    el.innerHTML =
+      '<span class="krofi-rank">'+k.rang+'.</span>'+
+      '<div style="flex:2;min-width:0">'+
+        '<div class="krofi-name">'+k.naziv+'</div>'+
+        '<div class="krofi-bar-wrap"><div class="krofi-bar" style="width:'+bw+'%;background:hsl('+h+',65%,50%)"></div></div>'+
+      '</div>'+
+      (k.slika ? '<img class="krofi-thumb" src="'+k.slika+'" alt="">' : 
+       k.isDB  ? '<span class="krofi-new-badge">novo</span>' : '<span class="krofi-cam">📷</span>');
+    
+    list.appendChild(el);
   });
 }
+
 /* ── KROFNA IMAGE VIEWER ── */
-function openKrofnaViewer(src,naziv) {
-  document.getElementById('kv-img').src=src;
-  document.getElementById('kv-name').textContent=naziv;
+function openKrofnaViewer(src, naziv) {
+  document.getElementById('kv-img').src = src;
+  document.getElementById('kv-name').textContent = naziv;
   document.getElementById('krofna-viewer').classList.add('open');
 }
 function closeKrofnaViewer() {
   document.getElementById('krofna-viewer').classList.remove('open');
 }
 
-/* ── LOAD PUTOVANJA (all from DB) ── */
+/* ── LOAD PUTOVANJA FROM DB ── */
 async function loadPutovanjaFromDB() {
-  const puts=await sbFetch('GET','putovanja','','?select=*&order=created_at.asc');
-  if(!puts) return;
-  const totalKm=puts.reduce((s,p)=>s+p.km,0);
-  const maxKm=Math.max(...puts.map(p=>p.km),1);
-  const statsEl=document.getElementById('mapa-stats');
+  const dbPuts = await sbFetch('GET','putovanja','','?select=*&order=created_at.asc');
+  if(!dbPuts) return;
+  
+  // Combine static + DB
+  const staticMapa = [...MAPA];
+  const allMapa = [
+    ...staticMapa,
+    ...dbPuts.map(p=>[p.destinacija, p.km])
+  ];
+  
+  const totalKm = allMapa.reduce((s,[,k])=>s+k,0);
+  const maxKm = Math.max(...allMapa.map(([,k])=>k));
+  
+  const statsEl = document.getElementById('mapa-stats');
   if(statsEl) {
-    statsEl.innerHTML=
-      `<div class="mapa-stat"><span class="mapa-stat-num">${totalKm.toLocaleString('bs')}</span><span class="mapa-stat-label">Km zajedno</span></div>`+
-      `<div class="mapa-stat"><span class="mapa-stat-num">${puts.length}</span><span class="mapa-stat-label">Putovanja</span></div>`+
-      `<div class="mapa-stat"><span class="mapa-stat-num">${Math.round(totalKm/puts.length).toLocaleString('bs')}</span><span class="mapa-stat-label">Prosjek km</span></div>`;
+    statsEl.innerHTML =
+      '<div class="mapa-stat"><span class="mapa-stat-num">'+totalKm.toLocaleString('bs')+'</span><span class="mapa-stat-label">Km zajedno</span></div>'+
+      '<div class="mapa-stat"><span class="mapa-stat-num">'+allMapa.length+'</span><span class="mapa-stat-label">Putovanja</span></div>'+
+      '<div class="mapa-stat"><span class="mapa-stat-num">'+Math.round(totalKm/allMapa.length).toLocaleString('bs')+'</span><span class="mapa-stat-label">Prosjek km</span></div>';
   }
-  const mlist=document.getElementById('mapa-list');
+  
+  const mlist = document.getElementById('mapa-list');
   if(!mlist) return;
   mlist.innerHTML='';
-  puts.forEach(p=>{
-    const bw=Math.round((p.km/maxKm)*100);
-
-    const item=document.createElement('div');
-    item.className='mapa-item';
-    item.style.cssText='opacity:1;transform:none;border-radius:10px;';
-    item.innerHTML=
-      `<div class="mapa-dot"></div>`+
-      `<div style="flex:1;min-width:0">`+
-        `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">`+
-          `<span class="mapa-dest">Sarajevo → ${p.destinacija}</span>`+
-          `<span class="mapa-km">${p.km.toLocaleString('bs')} km</span>`+
-        `</div>`+
-        `<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:${bw}%"></div></div>`+
-      `</div>`;
-
-    const wrap=document.createElement('div');
-    wrap.className='swipe-item-wrap';
-    const delBg=document.createElement('div');  delBg.className='swipe-bg del-bg';
-    const inner=document.createElement('div');  inner.className='swipe-inner';
-    inner.appendChild(item);
-    wrap.appendChild(delBg);
-    wrap.appendChild(inner);
-    mlist.appendChild(wrap);
-
-    // Putovanja: swipe right = delete only (no edit)
-    addSwipe(inner, wrap,
-      ()=>deletePut(p.id, p.destinacija),
-      null
-    );
+  
+  allMapa.forEach(([dest,km],i)=>{
+    const bw = Math.round((km/maxKm)*100);
+    const isNew = i >= staticMapa.length;
+    const el = document.createElement('div');
+    el.className='mapa-item';
+    el.style.cssText='opacity:1;transform:none;';
+    el.innerHTML=
+      '<div class="mapa-dot"></div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">'+
+          '<span class="mapa-dest">Sarajevo → '+dest+(isNew?' <span style=\"color:var(--gold);font-size:11px;\">(novo)</span>':'')+' </span>'+
+          '<span class="mapa-km">'+km.toLocaleString('bs')+' km</span>'+
+        '</div>'+
+        '<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:'+bw+'%"></div></div>'+
+      '</div>';
+    mlist.appendChild(el);
   });
 }
-/* ── INIT ── */
+
+/* ── INIT — load from DB after page opens ── */
 async function initSupabase() {
   await Promise.all([loadKrofneFromDB(), loadPutovanjaFromDB()]);
 }
+
+// Run after main becomes visible
 document.getElementById('main').addEventListener('transitionend', function once(){
   initSupabase();
   this.removeEventListener('transitionend', once);
 });
-if(document.getElementById('main').classList.contains('show')){
+// Also run immediately in case main is already visible
+if(document.getElementById('main').style.opacity==='1' || 
+   document.getElementById('main').classList.contains('show')){
   initSupabase();
 }
 </script>
