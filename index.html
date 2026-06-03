@@ -516,12 +516,18 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   background: #922b21;
   color: #fff;
   justify-content: flex-end;
+  font-size: 20px;
+  gap: 8px;
 }
+.swipe-row-bg.bg-del::after { content: '🗑'; font-size: 22px; }
 .swipe-row-bg.bg-edit {
   background: #1a5276;
   color: #fff;
   justify-content: flex-start;
+  font-size: 20px;
+  gap: 8px;
 }
+.swipe-row-bg.bg-edit::before { content: '✏️'; font-size: 22px; }
 .swipe-row-inner {
   position: relative;
   z-index: 1;
@@ -1737,7 +1743,10 @@ async function sbSavePut() {
   if (id) {
     ok = await sbQ('PATCH', 'putovanja', {destinacija: dest, km: km}, '?id=eq.' + id);
   } else {
-    ok = await sbQ('POST', 'putovanja', {destinacija: dest, km: km});
+    // Get current max sort_order
+  var existing = await sbQ('GET', 'putovanja', null, '?select=sort_order&order=sort_order.desc&limit=1');
+  var nextOrder = (existing && existing.length && existing[0].sort_order) ? existing[0].sort_order + 1 : 999;
+  ok = await sbQ('POST', 'putovanja', {destinacija: dest, km: km, sort_order: nextOrder});
   }
   btn.disabled = false; btn.textContent = 'Sacuvaj';
   if (ok) { sbCloseModal('put'); sbLoadPuts(); }
@@ -1782,8 +1791,7 @@ async function sbLoadKrofne() {
       '<span class="krofi-rank">' + (i + 1) + '.</span>' +
       '<span class="krofi-name" style="flex:1">' + k.naziv + '</span>' +
       thumb +
-      '<button class="sb-edit" ' + dataAttr + ' onclick="sbEditKrofna(this)">✏️</button>' +
-      '<button class="sb-del" onclick="sbDelKrofna(\'' + k.id + '\',\'' + k.naziv.replace(/'/g, "\\'") + '\')">✕</button>';
+      '';  // edit/delete via swipe
     // Swipe row wrapper
     var row = document.createElement('div');
     row.className = 'swipe-row';
@@ -1834,7 +1842,7 @@ function sbViewImg(naziv, id) {
 
 /* Load and render putovanja */
 async function sbLoadPuts() {
-  var data = await sbQ('GET', 'putovanja', null, '?select=*&order=created_at.asc');
+  var data = await sbQ('GET', 'putovanja', null, '?select=*&order=sort_order.asc,created_at.asc');
   if (!data) return;
   var totalKm = 0;
   for (var i = 0; i < data.length; i++) totalKm += data[i].km;
@@ -1866,8 +1874,7 @@ async function sbLoadPuts() {
         '</div>' +
         '<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:' + bw + '%"></div></div>' +
       '</div>' +
-      '<button class="sb-edit" onclick="sbOpenModal(\'put\',{id:\'' + p.id + '\',destinacija:\'' + p.destinacija.replace(/'/g, "\\'") + '\',km:' + p.km + '})">✏️</button>' +
-      '<button class="sb-del" onclick="sbDelPut(\'' + p.id + '\',\'' + p.destinacija.replace(/'/g, "\\'") + '\')">✕</button>';
+      '';  // edit/delete via swipe
     var row = document.createElement('div');
     row.className = 'swipe-row';
     row.setAttribute('data-row-id', p.id);
