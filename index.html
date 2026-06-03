@@ -378,39 +378,29 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   display:flex; flex-direction:column;
   align-items:center; justify-content:center;
   padding:40px 28px;
+  touch-action:manipulation;
 }
-#pin-screen .pin-mountain {
-  width:200px; margin-bottom:8px; opacity:0.7;
-}
+#pin-screen.hide { animation:fadeOut 0.8s ease forwards; pointer-events:none; }
+#pin-screen .pin-mountain { width:200px; margin-bottom:0; opacity:0.7; }
 #pin-screen h2 {
   font-family:var(--serif); font-weight:300;
   font-size:clamp(22px,6vw,32px);
-  color:var(--gold); margin-bottom:8px;
-  text-align:center;
+  color:var(--gold); margin-bottom:8px; text-align:center;
 }
 #pin-screen .pin-hint {
   font-family:var(--serif); font-style:italic;
   font-size:15px; color:var(--text-muted);
   margin-bottom:36px; text-align:center;
 }
-.pin-dots {
-  display:flex; gap:14px; margin-bottom:32px;
-}
+.pin-dots { display:flex; gap:14px; margin-bottom:32px; }
 .pin-dot {
   width:16px; height:16px; border-radius:50%;
   border:2px solid rgba(201,169,110,0.4);
   background:transparent;
   transition:background 0.2s, border-color 0.2s;
 }
-.pin-dot.filled {
-  background:var(--gold);
-  border-color:var(--gold);
-}
-.pin-dot.error {
-  background:#e05a5a;
-  border-color:#e05a5a;
-  animation:pinShake 0.4s ease;
-}
+.pin-dot.filled { background:var(--gold); border-color:var(--gold); }
+.pin-dot.error  { background:#e05a5a; border-color:#e05a5a; animation:pinShake 0.4s ease; }
 @keyframes pinShake {
   0%,100%{transform:translateX(0);}
   20%{transform:translateX(-6px);}
@@ -421,6 +411,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 .pin-pad {
   display:grid; grid-template-columns:repeat(3,1fr);
   gap:12px; max-width:280px; width:100%;
+  touch-action:manipulation;
 }
 .pin-key {
   aspect-ratio:1;
@@ -428,87 +419,17 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   border:1px solid rgba(201,169,110,0.15);
   border-radius:50%;
   color:var(--text);
-  font-family:var(--serif); font-size:clamp(22px,6vw,28px);
-  font-weight:300;
+  font-family:var(--serif); font-size:clamp(22px,6vw,28px); font-weight:300;
   cursor:pointer;
   display:flex; align-items:center; justify-content:center;
   transition:background 0.15s, border-color 0.15s, transform 0.1s;
   -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+  user-select:none; -webkit-user-select:none;
 }
 .pin-key:active { background:#252a25; border-color:var(--gold); transform:scale(0.93); }
 .pin-key.del { font-size:20px; }
 .pin-key.empty { visibility:hidden; pointer-events:none; }
-#pin-screen.hide { animation:fadeOut 0.6s ease forwards; }
-
-/* ── SUPABASE CONFIG ── */
-
-/* ── ADD KROFNA MODAL ── */
-.fab-wrap{position:fixed;bottom:72px;right:20px;z-index:600;display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
-.fab-krofna,.fab-put{display:none;align-items:center;gap:10px;}
-.fab-krofna.fab-visible,.fab-put.fab-visible{display:flex;}
-.fab{width:46px;height:46px;border-radius:50%;border:1px solid rgba(201,169,110,0.4);background:var(--dark-3);color:var(--gold);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s,transform 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
-.fab:hover{background:#252a25;transform:scale(1.08);}
-.fab-label{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);background:var(--dark-3);padding:4px 10px;border-radius:20px;border:1px solid rgba(201,169,110,0.15);white-space:nowrap;}
-
-.modal-overlay{position:fixed;inset:0;z-index:7000;background:rgba(0,0,0,0);display:none;align-items:flex-end;justify-content:center;transition:background 0.3s;}
-.modal-overlay.open{display:flex;background:rgba(0,0,0,0.85);}
-.modal-box{background:#141814;border:1px solid rgba(201,169,110,0.2);border-radius:20px 20px 0 0;padding:28px 24px 40px;width:100%;max-width:480px;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);}
-.modal-overlay.open .modal-box{transform:translateY(0);}
-.modal-title{font-family:var(--serif);font-size:22px;font-weight:300;color:var(--gold);margin-bottom:24px;text-align:center;}
-.modal-field{margin-bottom:16px;}
-.modal-field label{display:block;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
-.modal-field input,.modal-field select{width:100%;background:var(--dark-3);border:1px solid rgba(201,169,110,0.2);border-radius:10px;padding:12px 14px;color:var(--text);font-family:var(--sans);font-size:15px;outline:none;-webkit-appearance:none;}
-.modal-field input:focus,.modal-field select:focus{border-color:var(--gold);}
-.modal-field select option{background:#1a1f1a;}
-.modal-img-preview{width:100%;aspect-ratio:4/3;border-radius:10px;border:2px dashed rgba(201,169,110,0.2);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;cursor:pointer;overflow:hidden;margin-bottom:4px;background:var(--dark-3);}
-.modal-img-preview img{width:100%;height:100%;object-fit:cover;}
-.modal-img-preview span{font-size:28px;opacity:0.4;}
-.modal-img-preview p{font-size:12px;color:var(--text-muted);}
-.modal-btn{width:100%;padding:15px;border-radius:12px;background:var(--gold);border:none;color:#0a0c0a;font-family:var(--serif);font-size:18px;font-weight:400;cursor:pointer;margin-top:8px;transition:opacity 0.2s;}
-.modal-btn:hover{opacity:0.85;}
-.modal-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.modal-close{position:absolute;top:16px;right:20px;font-size:22px;color:var(--text-muted);cursor:pointer;background:none;border:none;}
-.modal-cancel{width:100%;padding:12px;border-radius:12px;background:transparent;border:1px solid rgba(201,169,110,0.15);color:var(--text-muted);font-family:var(--sans);font-size:15px;cursor:pointer;margin-top:8px;}
-
-/* ── KROFNA IMAGE VIEWER ── */
-#krofna-viewer{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.95);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;cursor:pointer;}
-#krofna-viewer.open{display:flex;}
-#krofna-viewer img{max-width:100%;max-height:75vh;border-radius:12px;object-fit:contain;}
-#krofna-viewer .kv-name{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--gold-light);margin-top:16px;text-align:center;}
-#krofna-viewer .kv-close{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-top:12px;}
-
-/* ── KROFI ITEM WITH PHOTO ── */
-.krofi-item.has-photo{cursor:pointer;}
-.krofi-item.has-photo:hover{border-color:rgba(201,169,110,0.4);background:#1f261f;}
-.krofi-item .krofi-thumb{width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;}
-.krofi-item .krofi-cam{font-size:14px;opacity:0.25;flex-shrink:0;}
-.krofi-new-badge{display:none;}
-
-/* DELETE BUTTONS */
-/* SWIPE ACTIONS */
-.swipe-item-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:6px;}
-.swipe-item-wrap .swipe-bg{
-  position:absolute;inset:0;display:flex;align-items:center;
-  padding:0 20px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:400;
-  pointer-events:none;transition:opacity 0.2s;opacity:0;
-}
-.swipe-item-wrap .swipe-bg.del-bg{
-  background:#c0392b;color:#fff;justify-content:flex-end;
-}
-.swipe-item-wrap .swipe-bg.edit-bg{
-  background:#2980b9;color:#fff;justify-content:flex-start;
-}
-.swipe-item-wrap .swipe-bg.del-bg::after{content:'🗑 Obriši';}
-.swipe-item-wrap .swipe-bg.edit-bg::before{content:'✏️ Uredi';}
-.swipe-item-wrap .swipe-inner{
-  position:relative;z-index:1;
-  transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);
-  will-change:transform;
-  border-radius:10px;
-}
-/* Remove old hover buttons */
-.krofi-item .krofi-del,.krofi-item .krofi-edit,
-.mapa-item .mapa-del{display:none !important;}
 
 /* ── ADMIN PIN MODAL ── */
 #admin-pin-overlay{
@@ -566,626 +487,20 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
     <div class="pin-dot" id="pd3"></div>
   </div>
   <div class="pin-pad">
-    <button class="pin-key" onclick="pinPress('1')">1</button>
-    <button class="pin-key" onclick="pinPress('2')">2</button>
-    <button class="pin-key" onclick="pinPress('3')">3</button>
-    <button class="pin-key" onclick="pinPress('4')">4</button>
-    <button class="pin-key" onclick="pinPress('5')">5</button>
-    <button class="pin-key" onclick="pinPress('6')">6</button>
-    <button class="pin-key" onclick="pinPress('7')">7</button>
-    <button class="pin-key" onclick="pinPress('8')">8</button>
-    <button class="pin-key" onclick="pinPress('9')">9</button>
-    <button class="pin-key empty"></button>
-    <button class="pin-key" onclick="pinPress('0')">0</button>
-    <button class="pin-key del" onclick="pinDel()">⌫</button>
+    <button class="pin-key" type="button">1</button>
+    <button class="pin-key" type="button">2</button>
+    <button class="pin-key" type="button">3</button>
+    <button class="pin-key" type="button">4</button>
+    <button class="pin-key" type="button">5</button>
+    <button class="pin-key" type="button">6</button>
+    <button class="pin-key" type="button">7</button>
+    <button class="pin-key" type="button">8</button>
+    <button class="pin-key" type="button">9</button>
+    <button class="pin-key empty" type="button"></button>
+    <button class="pin-key" type="button">0</button>
+    <button class="pin-key del" type="button">⌫</button>
   </div>
 </div>
-
-<div class="stars-bg" id="stars-bg"></div>
-
-<svg class="mountain-bg" viewBox="0 0 375 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-  <polygon points="0,200 0,120 60,60 120,100 180,30 240,80 300,20 375,70 375,200" fill="#1a2a15" opacity="0.8"/>
-  <polygon points="0,200 0,140 40,100 90,130 150,70 200,110 260,50 320,90 375,60 375,200" fill="#243320" opacity="0.9"/>
-  <polygon points="0,200 0,170 50,150 100,165 160,140 220,160 280,135 340,155 375,145 375,200" fill="#1a2a15"/>
-  <g opacity="0.6">
-    <line x1="55" y1="200" x2="55" y2="95" stroke="#4a6a3a" stroke-width="1.5"/>
-    <circle cx="55" cy="95" r="2" fill="#C9A96E"/>
-    <line x1="55" y1="95" x2="55" y2="70" stroke="#C9A96E" stroke-width="1" transform="rotate(0,55,95)"/><line x1="55" y1="95" x2="75" y2="108" stroke="#C9A96E" stroke-width="1" transform="rotate(120,55,95)"/><line x1="55" y1="95" x2="35" y2="108" stroke="#C9A96E" stroke-width="1" transform="rotate(240,55,95)"/>
-    <line x1="95" y1="200" x2="95" y2="88" stroke="#4a6a3a" stroke-width="1.5"/>
-    <circle cx="95" cy="88" r="2" fill="#C9A96E"/>
-    <line x1="95" y1="88" x2="95" y2="63" stroke="#C9A96E" stroke-width="1"/><line x1="95" y1="88" x2="117" y2="101" stroke="#C9A96E" stroke-width="1" transform="rotate(120,95,88)"/><line x1="95" y1="88" x2="73" y2="101" stroke="#C9A96E" stroke-width="1" transform="rotate(240,95,88)"/>
-    <line x1="290" y1="200" x2="290" y2="80" stroke="#4a6a3a" stroke-width="1.5"/>
-    <circle cx="290" cy="80" r="2" fill="#C9A96E"/>
-    <line x1="290" y1="80" x2="290" y2="55" stroke="#C9A96E" stroke-width="1" transform="rotate(90,290,80)"/><line x1="290" y1="80" x2="312" y2="93" stroke="#C9A96E" stroke-width="1" transform="rotate(210,290,80)"/><line x1="290" y1="80" x2="268" y2="93" stroke="#C9A96E" stroke-width="1" transform="rotate(330,290,80)"/>
-    <line x1="330" y1="200" x2="330" y2="92" stroke="#4a6a3a" stroke-width="1.5"/>
-    <circle cx="330" cy="92" r="2" fill="#C9A96E"/>
-    <line x1="330" y1="92" x2="330" y2="67" stroke="#C9A96E" stroke-width="1" transform="rotate(30,330,92)"/><line x1="330" y1="92" x2="352" y2="105" stroke="#C9A96E" stroke-width="1" transform="rotate(150,330,92)"/><line x1="330" y1="92" x2="308" y2="105" stroke="#C9A96E" stroke-width="1" transform="rotate(270,330,92)"/>
-  </g>
-</svg>
-
-<div class="hearts-container" id="hearts"></div>
-
-<!-- INTRO -->
-<div id="intro" onclick="openPage()">
-  <span class="intro-wind">🌬</span>
-  <svg class="intro-mountain" viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg">
-    <defs><linearGradient id="ig" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3a5a2a" stop-opacity="0.9"/><stop offset="100%" stop-color="#0a0c0a" stop-opacity="0.9"/></linearGradient></defs>
-    <polygon points="0,160 0,100 50,50 100,80 130,20 160,65 210,35 260,60 260,160" fill="url(#ig)"/>
-    <polygon points="0,160 0,120 35,100 80,115 130,80 175,110 220,90 260,105 260,160" fill="#1a2a15"/>
-    <circle cx="200" cy="30" r="10" fill="none" stroke="#C9A96E" stroke-width="1.5" opacity="0.8"/>
-    <circle cx="204" cy="28" r="8" fill="#0a0c0a"/>
-    <circle cx="80" cy="25" r="1.5" fill="#C9A96E" opacity="0.9"/><circle cx="110" cy="14" r="1" fill="#C9A96E" opacity="0.7"/><circle cx="155" cy="22" r="1.5" fill="#C9A96E" opacity="0.8"/><circle cx="40" cy="40" r="1" fill="#C9A96E" opacity="0.6"/>
-    <line x1="165" y1="160" x2="165" y2="60" stroke="#4a6a3a" stroke-width="1.5"/>
-    <line x1="165" y1="60" x2="165" y2="42" stroke="#C9A96E" stroke-width="1" opacity="0.9"/>
-    <line x1="165" y1="60" x2="181" y2="69" stroke="#C9A96E" stroke-width="1" opacity="0.9" transform="rotate(120,165,60)"/>
-    <line x1="165" y1="60" x2="149" y2="69" stroke="#C9A96E" stroke-width="1" opacity="0.9" transform="rotate(240,165,60)"/>
-  </svg>
-  <h1>Za početak naše ljubavi</h1>
-  <p class="intro-sub">7. juni 2025.</p>
-  <p class="tap-hint">Pritisni ako ti se i dalje sviđam</p>
-</div>
-
-<div id="main">
-
-  <section class="hero">
-    <div class="hero-glow"></div>
-    <p class="hero-date">7. juni</p>
-    <h1>Naša <em>priča</em><br>počela je<br>pod zvijezdama</h1>
-    <p class="hero-sub">između vjetrenjača i divljih konja</p>
-    <div class="divider"></div>
-    <p class="hero-message">Za neke spontane odluke ne bih očekivao da ce mi promijeniti život, ali izgleda da mogu. Jedan glupi poziv i jedno glupo "da" na taj poziv su me učinili najzaljubljenijom osobom na svijetu, a to nikada nisam mogao očekivati. Eto, prošla je godina od mog odazivanja na taj poziv, a ja i dalje nisam siguran da li mi djeluje kao da je prošlo 5 dana ili 5 godina.</p>
-    <p class="hero-message-bold">Od tada znam da si ti moja osoba.</p>
-    <div class="scroll-hint"><span>Nešto naše</span><div class="scroll-arrow"></div></div>
-  </section>
-
-  <!-- KOJI JE NAS DATUM -->
-  <section class="dates-section">
-    <p class="section-tag">Nešto naše</p>
-    <h2 class="section-title">Koji je naš datum?</h2>
-    <div class="date-buttons">
-      <button class="date-btn" id="btn-cincar" data-scroll onclick="toggleCounter('cincar')" aria-expanded="false">
-        <span class="date-btn-icon">⛰️</span>
-        <div class="date-btn-body">
-          <p class="date-btn-label">7. juni 2025.</p>
-          <p class="date-btn-title">Cincar — ja sam se zaljubio</p>
-          <p class="date-btn-sub">Ti, zvijezde i 27 vjetrenjača</p>
-        </div>
-        <span class="date-btn-arrow">›</span>
-      </button>
-      <div class="counter-panel" id="panel-cincar">
-        <div class="counter-inner">
-          <p class="counter-inner-label">Od kad si mi promijenila život</p>
-          <div class="counter-grid">
-            <div class="counter-item"><span class="counter-num" id="c1-days">0</span><span class="counter-unit">Dana</span></div>
-            <div class="counter-item"><span class="counter-num" id="c1-hours">00</span><span class="counter-unit">Sati</span></div>
-            <div class="counter-item"><span class="counter-num" id="c1-mins">00</span><span class="counter-unit">Minuta</span></div>
-            <div class="counter-item"><span class="counter-num" id="c1-secs">00</span><span class="counter-unit">Sekundi</span></div>
-          </div>
-          <p class="counter-inner-sub">od noći na Cincaru</p>
-        </div>
-      </div>
-      <button class="date-btn" id="btn-kiss" data-scroll style="transition-delay:0.15s" onclick="toggleCounter('kiss')" aria-expanded="false">
-        <span class="date-btn-icon">🌙</span>
-        <div class="date-btn-body">
-          <p class="date-btn-label">12. juni 2025. · 23:00</p>
-          <p class="date-btn-title">Prvi poljubac</p>
-          <p class="date-btn-sub">Parking kod Arke, romantika :)</p>
-        </div>
-        <span class="date-btn-arrow">›</span>
-      </button>
-      <div class="counter-panel" id="panel-kiss">
-        <div class="counter-inner">
-          <p class="counter-inner-label">Od našeg prvog poljupca</p>
-          <div class="counter-grid">
-            <div class="counter-item"><span class="counter-num" id="c2-days">0</span><span class="counter-unit">Dana</span></div>
-            <div class="counter-item"><span class="counter-num" id="c2-hours">00</span><span class="counter-unit">Sati</span></div>
-            <div class="counter-item"><span class="counter-num" id="c2-mins">00</span><span class="counter-unit">Minuta</span></div>
-            <div class="counter-item"><span class="counter-num" id="c2-secs">00</span><span class="counter-unit">Sekundi</span></div>
-          </div>
-          <p class="counter-inner-sub"></p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CAROUSEL -->
-  <section class="carousel-section">
-    <div class="carousel-header">
-      <p class="section-tag">Baš dugo nismo imali zajedničke slike, ali evo</p>
-      <h2 class="section-title">Neki naši momenti</h2>
-    </div>
-
-    <div class="carousel-wrap">
-      <div class="carousel-track">
-        <div class="slides-inner" id="slides-inner">
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/1-Vjetrenjace.jpg" alt="1-Vjetrenjace.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Cincar, 27 vjetrenjača. Ovdje je sve počelo.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/2-HanaCincar.jpg" alt="2-HanaCincar.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Hana i konji.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/3-Zaba.jpg" alt="3-Zaba.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Prva žaba pogođena Terreom.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/4-KajakTrebizat.jpg" alt="4-KajakTrebizat.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Baš nam je dobro išlo.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/5-Stolac.jpg" alt="5-Stolac.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Prvi put da te vidim u kupačem. mmm</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/6-Spilice.jpg" alt="6-Spilice.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>SPILICE</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/7-Ramsko.jpg" alt="7-Ramsko.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Gdje sam zaključio da te volim.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/8-Una.jpg" alt="8-Una.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Ovdje nam je pogotovo dobro išlo.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/9-Zavratnica.jpg" alt="9-Zavratnica.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>ZAVRATNICA</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/10-Pag.jpg" alt="10-Pag.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Meni najdraži zalazak sunca sa tobom.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/11-Pag.jpg" alt="11-Pag.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Trebamo li ponijeti vode?</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/12-Omis.jpg" alt="12-Omis.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Moja prva ferrata.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/13-Mostar.jpg" alt="13-Mostar.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Zaboravit ćemo napad panike.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/14-Mostar.jpg" alt="14-Mostar.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>KONJE</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/15-Sah.jpg" alt="15-Sah.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Hana izgubila u šahu. Prvi dio.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/16-Visocica.jpg" alt="16-Visocica.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Moj prvi put na tvojoj najdražoj planini.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/17-HanaIKrave.jpg" alt="17-HanaIKrave.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Hana i krave. MUUUUUU</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/18-Sah.jpg" alt="18-Sah.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Opet si izgubila.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/19-Josipova.jpg" alt="19-Josipova.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Hoće li padati kiša?</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/20-HanaHrvoje.jpg" alt="20-HanaHrvoje.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Hana i Hrvoje.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/21-Zelengora.jpg" alt="21-Zelengora.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Možemo li stati?</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/22-Ilirski.jpg" alt="22-Ilirski.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Ovdje si bila slatka.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/23-Sutjeska.jpg" alt="23-Sutjeska.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Moramo ovdje opet.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/24-Sutjeska.jpg" alt="24-Sutjeska.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Svidja mi se ova slika.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/25-Piramide.jpg" alt="25-Piramide.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Svjetsko čudo.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/26-HanaTobogan.jpg" alt="26-HanaTobogan.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Vidi jesi slatka.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/27-HanaJelen.jpg" alt="27-HanaJelen.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Glupave zivotinje.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/28-HanaPatke.jpg" alt="28-HanaPatke.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Zle životinje.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/29-HanaKamile.jpg" alt="29-HanaKamile.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Naš dobar drug.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/30-FerataHum.jpg" alt="30-FerataHum.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Moja najdraža ferrata.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/31-Ljubljana.jpg" alt="31-Ljubljana.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>VELIKA JELKA.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/32-Ljubljana.jpg" alt="32-Ljubljana.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>I dalje ne znam kako je kinez ovo uradio.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/33-Bicikelj.jpg" alt="33-Bicikelj.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>BICIKELJ</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/34-Bled.jpg" alt="34-Bled.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Mi na bledu.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/35-Visocica.jpg" alt="35-Visocica.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Naš prvi photoshoot na Visočici. Bit će jedan još ljepši.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/36-Ozren.jpg" alt="36-Ozren.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Popenjali se.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/37-Hana.jpg" alt="37-Hana.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Skibidi ferrata.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/38-Mi.jpg" alt="38-Mi.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>PA VIDI NAS.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/39-Mi.jpg" alt="39-Mi.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>VIDI NAS I OVDJE.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/40-MiDrvo.jpg" alt="40-MiDrvo.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>VIDI NAS SA DRVETOM.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/41-MiSplit.jpg" alt="41-MiSplit.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>I OVDJE SMO SLATKI.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/42-Mi.jpg" alt="42-Mi.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>MA VIDI NAS OPET.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/43-MiHodamo.jpg" alt="43-MiHodamo.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>GLEDAJ GORE HANAA.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/44-MiDrvo.jpg" alt="44-MiDrvo.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Koliko si ti samo slatka.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/45-MiJelka.jpg" alt="45-MiJelka.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Jesmo je dobro okitili.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/46-HanaDiploma.jpg" alt="46-HanaDiploma.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Ponos moj.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/47-Ja.jpg" alt="47-Ja.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Šta ću ja ovdje.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/48-JaFerata.jpg" alt="48-JaFerata.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>I ovdje.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/48-Muzej.jpg" alt="48-Muzej.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Big Hana, small Tin.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/49-Mi.jpg" alt="49-Mi.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Ma i ovdje smo slatki.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/50-Mi.jpg" alt="50-Mi.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>I ovdje opet, uvijek smo slatki. Do tebe je.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/51-JaMuzej.jpg" alt="51-JaMuzej.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Hana hvala ti što si me odvela u muzej u Jablanici i ostvarila moj dječački san.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/52-MiGraz.jpg" alt="52-MiGraz.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Jebote opet smo slatki.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/57-MiFerata2.jpg" alt="Bukovik ferata" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>njam</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/53-MiVranica.jpg" alt="53-MiVranica.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Ti si moj vrh.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/54-MiFerata.jpg" alt="54-MiFerata.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Ti si moja ljubav.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/56-Mi.jpg" alt="56-Mi.jpg" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>Ti si moj svijet.</p></div>
-          </div>
-        </div>
-
-      <div class="carousel-nav">
-        <button class="nav-btn" id="prev-btn" onclick="carouselPrev()" aria-label="Prethodna" disabled>‹</button>
-        <span class="carousel-counter"><em id="cur-slide">1</em> / <span id="tot-slides">5</span></span>
-        <button class="nav-btn" id="next-btn" onclick="carouselNext()" aria-label="Sljedeća">›</button>
-      </div>
-      <div class="carousel-dots" id="carousel-dots"></div>
-      <p class="swipe-hint">← imaš strelice a možeš i prstima →</p>
-    </div>
-  </section>
-
-  
-  <section class="krofi-section">
-    <div class="krofi-header">
-      <p class="section-tag">Bitne informacije</p>
-      <h2 class="section-title">Rang lista krofni 🍩</h2>
-      <p class="krofi-sub">Sada su od najbolje prema najgoroj</p>
-    </div>
-    <div class="krofi-container">
-      <div class="krofi-list" id="krofi-list"></div>
-    </div>
-  </section>
-
-  <section class="mapa-section">
-    <div class="mapa-header">
-      <p class="section-tag">Naši kilometri</p>
-      <h2 class="section-title">Koliko smo prešli?</h2>
-    </div>
-    <div class="mapa-stats" id="mapa-stats"></div>
-    <div class="mapa-wrap"><div class="mapa-list" id="mapa-list"></div></div>
-  </section>
-
-<section class="letter-section">
-    <div class="letter-inner">
-      <p class="section-tag" style="margin-bottom:40px;">Pismo tebi</p>
-      <p class="letter-text">Hvala ti što si mi učinila ovih 365 dana najljepšim u životu.<br><br>Hvala ti na svakom pogledu, zagrljaju, dodiru i poljupcu. Hvala ti što si probudila u meni nešto što nisam znao da imam. <br><br><em>Nadam se da ću do kraja života praviti ovakve stvari za nas.</em></p>
-      <p class="signature">Voli te tvoj Tinkica ❤</p>
-    </div>
-  </section>
-
-  <footer>
-    <p class="footer-symbol">✦</p>
-    <p>7. juni</p>
-  </footer>
-
-</div>
-
-<!-- QUIZ -->
-<div id="quiz-overlay">
-  <div class="quiz-box" id="quiz-box">
-    <span class="quiz-emoji">💭</span>
-    <p class="quiz-question">Šta smo mi sad?</p>
-    <div class="quiz-options" id="quiz-options">
-      <button class="quiz-opt" id="opt-neznam" onclick="optNeZnam()">
-        <span class="opt-text" id="neznam-text">Ne znam</span>
-      </button>
-      <button class="quiz-opt" id="opt-sve" onclick="optSve()">
-        <span class="opt-text">Ti si meni sve</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- CELEBRATION -->
-<div id="celebration">
-  <canvas id="glitter-canvas"></canvas>
-  <div class="celeb-content" id="celeb-content">
-    <div class="celeb-emoji">💖</div>
-    <h2 class="celeb-title">Ti si meni sve</h2>
-    <p class="celeb-sub">I uvijek ćeš biti.<br>Sretna nam godina.</p>
-    <div class="celeb-heart">💗</div>
-    <button class="celeb-back" onclick="closeCelebration()">← Hej, ovdje pritisneš da se vratiš nazad da možeš nastaviti, ima još.
-    </button>
-  </div>
-</div>
-
-
-<!-- POJEST CU TE -->
-<button class="pojest-btn" onclick="pojestCuTe()" title="❤">❤</button>
-<div id="pojest-popup"><span>POJEST ĆU TE</span></div>
-
-
-<!-- FAB BUTTONS -->
-<div class="fab-wrap" id="fab-wrap">
-  <div class="fab-krofna" id="fab-krofna">
-    <span class="fab-label">Dodaj krofnu</span>
-    <button class="fab" onclick="openModal('krofna')" title="Dodaj krofnu">🍩</button>
-  </div>
-  <div class="fab-put" id="fab-put">
-    <span class="fab-label">Dodaj putovanje</span>
-    <button class="fab" onclick="openModal('put')" title="Dodaj putovanje">🗺️</button>
-  </div>
-</div>
-
-<!-- KROFNA MODAL -->
-<div class="modal-overlay" id="modal-krofna" onclick="closeModalOutside(event,'krofna')">
-  <div class="modal-box" style="position:relative;">
-    <button class="modal-close" onclick="closeModal('krofna')">✕</button>
-    <p class="modal-title">🍩 Nova krofna</p>
-    <div class="modal-field">
-      <label>Naziv pekare / krofne</label>
-      <input type="text" id="k-naziv" placeholder="npr. Pekara Sunce" autocomplete="off">
-    </div>
-    <div class="modal-field">
-      <label>Pozicija na rang listi (1 = najbolja)</label>
-      <input type="number" id="k-rang" min="1" placeholder="npr. 5" autocomplete="off">
-    </div>
-    <div class="modal-field">
-      <label>Fotografija (opcionalno)</label>
-      <div class="modal-img-preview" id="k-img-preview" onclick="document.getElementById('k-file').click()">
-        <span>📷</span>
-        <p>Tapni da dodaš sliku</p>
-      </div>
-      <input type="file" id="k-file" accept="image/*" capture="environment" style="display:none" onchange="previewKrofnaImg(this)">
-    </div>
-    <button class="modal-btn" id="k-save-btn" onclick="saveKrofna()">Sačuvaj</button>
-    <button class="modal-cancel" onclick="closeModal('krofna')">Odustani</button>
-  </div>
-</div>
-
-<!-- PUT MODAL -->
-<div class="modal-overlay" id="modal-put" onclick="closeModalOutside(event,'put')">
-  <div class="modal-box" style="position:relative;">
-    <button class="modal-close" onclick="closeModal('put')">✕</button>
-    <p class="modal-title">🗺️ Novo putovanje</p>
-    <div class="modal-field">
-      <label>Destinacija</label>
-      <input type="text" id="p-dest" placeholder="npr. Trebević" autocomplete="off">
-    </div>
-    <div class="modal-field">
-      <label>Kilometri (povratno iz Sarajeva)</label>
-      <input type="number" id="p-km" min="1" placeholder="npr. 34" autocomplete="off">
-    </div>
-    <button class="modal-btn" id="p-save-btn" onclick="savePut()">Sačuvaj</button>
-    <button class="modal-cancel" onclick="closeModal('put')">Odustani</button>
-  </div>
-</div>
-
-<!-- KROFNA IMAGE VIEWER -->
-<div id="krofna-viewer" onclick="closeKrofnaViewer()">
-  <img id="kv-img" src="" alt="">
-  <p class="kv-name" id="kv-name"></p>
-  <p class="kv-close">Tapni da zatvoriš</p>
-</div>
-
 
 <!-- ADMIN PIN MODAL -->
 <div id="admin-pin-overlay">
@@ -1541,40 +856,76 @@ function pojestCuTe(){
 
 /* ── PIN ── */
 (function(){
-  // Simple obfuscation — split so it's not trivially grepped
-  const _p = ['2','6','1','0'].join('');
+  const CORRECT = ['2','6','1','0'].join('');
   let entered = '';
 
   function updateDots(){
     for(let i=0;i<4;i++){
       const d=document.getElementById('pd'+i);
+      if(!d) return;
       d.classList.toggle('filled', i<entered.length);
       d.classList.remove('error');
     }
   }
 
-  window.pinPress = function(k){
+  function pressKey(val){
+    if(val==='del'){
+      if(entered.length>0){ entered=entered.slice(0,-1); updateDots(); }
+      return;
+    }
     if(entered.length>=4) return;
-    entered += k;
+    entered+=val;
     updateDots();
     if(entered.length===4){
-      if(entered===_p){
+      if(entered===CORRECT){
         const s=document.getElementById('pin-screen');
         s.classList.add('hide');
-        setTimeout(()=>s.remove(), 700);
+        setTimeout(()=>{ if(s.parentNode) s.parentNode.removeChild(s); }, 800);
+        spawnHearts(20,false);
       } else {
-        // wrong — shake and reset
         for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.add('error');
         setTimeout(()=>{ entered=''; updateDots(); }, 700);
       }
     }
-  };
+  }
 
-  window.pinDel = function(){
-    if(entered.length>0){ entered=entered.slice(0,-1); updateDots(); }
-  };
+  // Attach listeners after DOM ready
+  function attachPinListeners(){
+    const pad = document.querySelector('.pin-pad');
+    if(!pad) return;
+    // Use touchend for mobile, click for desktop
+    pad.querySelectorAll('.pin-key').forEach(btn=>{
+      if(btn.classList.contains('empty')) return;
+      const val = btn.classList.contains('del') ? 'del' : btn.textContent.trim();
+      
+      btn.addEventListener('touchend', function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        pressKey(val);
+      }, {passive:false});
+      
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        pressKey(val);
+      });
+    });
+  }
 
-  // keyboard handled by unified listener below
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', attachPinListeners);
+  } else {
+    attachPinListeners();
+  }
+
+  // Physical keyboard
+  document.addEventListener('keydown', function(e){
+    const pinScreen = document.getElementById('pin-screen');
+    if(!pinScreen || pinScreen.classList.contains('hide')) return;
+    if(document.getElementById('admin-pin-overlay') && 
+       document.getElementById('admin-pin-overlay').classList.contains('open')) return;
+    if(e.key>='0'&&e.key<='9') pressKey(e.key);
+    if(e.key==='Backspace') pressKey('del');
+  });
 })();
 
 /* ══════════════════════════════════════
