@@ -1358,6 +1358,7 @@ inner.addEventListener("touchstart",e=>{
   tScrollLocked=false;
 },{passive:true});
 inner.addEventListener("touchmove",e=>{
+  if(document.getElementById("pin-screen")) return;
   const dx=Math.abs(e.touches[0].clientX-tx);
   const dy=Math.abs(e.touches[0].clientY-ty);
   if(dx>dy&&dx>8){tScrollLocked=true;e.preventDefault();}
@@ -1857,7 +1858,10 @@ function addSwipe(inner, wrap, onRight, onLeft) {
     }
   }
   inner.addEventListener('touchstart',onTouchStart,{passive:true});
-  inner.addEventListener('touchmove',onTouchMove,{passive:false});
+  inner.addEventListener('touchmove',function(e){
+    if(document.getElementById('pin-screen')) return;
+    onTouchMove(e);
+  },{passive:false});
   inner.addEventListener('touchend',onTouchEnd,{passive:true});
 }
 
