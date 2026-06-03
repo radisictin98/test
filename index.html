@@ -1145,9 +1145,9 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
       <label>Naziv</label>
       <input type="text" id="sb-k-naziv" autocomplete="off" placeholder="npr. Pekara Sunce">
     </div>
-    <div class="sb-field">
-      <label>Pozicija (1 = najbolja)</label>
-      <input type="number" id="sb-k-rang" min="1" autocomplete="off" placeholder="npr. 5">
+    <div class="sb-field" style="display:none">
+      <label>Pozicija</label>
+      <input type="number" id="sb-k-rang" min="1" autocomplete="off">
     </div>
     <div class="sb-field">
       <label>Fotografija (opcionalno)</label>
@@ -1658,10 +1658,15 @@ var sbKrofnaImg = null;
 
 function sbOpenModal(type, data) {
   if (type === 'krofna') {
-    document.getElementById('sb-krofna-title').textContent = data ? 'Uredi krofnu' : 'Nova krofna';
+    var isEdit = !!data;
+    document.getElementById('sb-krofna-title').textContent = isEdit ? 'Uredi krofnu' : 'Nova krofna';
     document.getElementById('sb-k-id').value = data ? data.id : '';
     document.getElementById('sb-k-naziv').value = data ? data.naziv : '';
     document.getElementById('sb-k-rang').value = data ? data.rang : '';
+    // Show rang field only for new krofna (drag manages order for existing)
+    var rangField = document.getElementById('sb-k-rang');
+    if (rangField && rangField.parentElement)
+      rangField.parentElement.style.display = isEdit ? 'none' : '';
     sbKrofnaImg = null;
     var prev = document.getElementById('sb-k-preview');
     if (data && data.slika_base64) {
@@ -1707,10 +1712,12 @@ async function sbSaveKrofna() {
   btn.disabled = true; btn.textContent = 'Cuvam...';
   var ok;
   if (id) {
-    var patch = {naziv: naziv, rang: rang};
+    // When editing: only update naziv and slika, preserve rang (managed by drag-drop)
+    var patch = {naziv: naziv};
     if (sbKrofnaImg) patch.slika_base64 = sbKrofnaImg;
     ok = await sbQ('PATCH', 'krofne', patch, '?id=eq.' + id);
   } else {
+    // When adding new: rang determines position
     ok = await sbQ('POST', 'krofne', {naziv: naziv, rang: rang, slika_base64: sbKrofnaImg || null});
   }
   btn.disabled = false; btn.textContent = 'Sacuvaj';
@@ -1980,10 +1987,13 @@ function makeDraggable(el, listId, onReorder) {
 /* Save new rang order to Supabase after drag */
 async function sbSaveKrofneOrder() {
   var items = document.querySelectorAll('#krofi-list > div[data-row-id]');
+  if (!items.length) return;
+  var promises = [];
   for (var i = 0; i < items.length; i++) {
     var id = items[i].getAttribute('data-row-id');
-    if (id) await sbQ('PATCH', 'krofne', {rang: i + 1}, '?id=eq.' + id);
+    if (id) promises.push(sbQ('PATCH', 'krofne', {rang: i + 1}, '?id=eq.' + id));
   }
+  await Promise.all(promises);
   sbLoadKrofne();
 }
 
