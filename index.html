@@ -512,12 +512,13 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 
 /* ── ADMIN PIN MODAL ── */
 #admin-pin-overlay{
-  position:fixed;inset:0;z-index:9500;
+  position:fixed;inset:0;z-index:8500;
   background:rgba(0,0,0,0.92);
   display:none;align-items:center;justify-content:center;
   padding:32px 24px;
+  pointer-events:none;
 }
-#admin-pin-overlay.open{display:flex;}
+#admin-pin-overlay.open{display:flex;pointer-events:all;}
 .admin-pin-box{
   background:#141814;border:1px solid rgba(201,169,110,0.25);
   border-radius:20px;padding:32px 28px;
