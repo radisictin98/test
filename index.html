@@ -485,12 +485,30 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 .krofi-new-badge{font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);background:rgba(201,169,110,0.12);padding:2px 6px;border-radius:4px;flex-shrink:0;}
 
 /* DELETE BUTTONS */
-.krofi-item .krofi-del{display:none;background:none;border:none;color:#e05a5a;font-size:16px;cursor:pointer;flex-shrink:0;padding:0 2px;opacity:0.7;}
-.krofi-item:hover .krofi-del{display:block;}
-.krofi-item .krofi-del:hover{opacity:1;}
-.mapa-item .mapa-del{display:none;background:none;border:none;color:#e05a5a;font-size:14px;cursor:pointer;flex-shrink:0;padding:0 4px;opacity:0.7;}
-.mapa-item:hover .mapa-del,.mapa-item:active .mapa-del{display:block;}
-.mapa-del-visible .mapa-del{display:block !important;}
+/* SWIPE ACTIONS */
+.swipe-item-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:6px;}
+.swipe-item-wrap .swipe-bg{
+  position:absolute;inset:0;display:flex;align-items:center;
+  padding:0 20px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;font-weight:400;
+  pointer-events:none;transition:opacity 0.2s;opacity:0;
+}
+.swipe-item-wrap .swipe-bg.del-bg{
+  background:#c0392b;color:#fff;justify-content:flex-end;
+}
+.swipe-item-wrap .swipe-bg.edit-bg{
+  background:#2980b9;color:#fff;justify-content:flex-start;
+}
+.swipe-item-wrap .swipe-bg.del-bg::after{content:'🗑 Obriši';}
+.swipe-item-wrap .swipe-bg.edit-bg::before{content:'✏️ Uredi';}
+.swipe-item-wrap .swipe-inner{
+  position:relative;z-index:1;
+  transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);
+  will-change:transform;
+  border-radius:10px;
+}
+/* Remove old hover buttons */
+.krofi-item .krofi-del,.krofi-item .krofi-edit,
+.mapa-item .mapa-del{display:none !important;}
 
 /* ── ADMIN PIN MODAL ── */
 #admin-pin-overlay{
@@ -517,11 +535,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 .admin-pin-key:active{background:#252a25;border-color:var(--gold);transform:scale(0.93);}
 .admin-pin-cancel{background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;padding:8px;letter-spacing:0.1em;text-transform:uppercase;}
 
-/* ── EDIT KROFNA MODAL ── */
-#modal-edit-krofna .modal-box{position:relative;}
-.krofi-item .krofi-edit{display:none;background:none;border:none;color:var(--gold);font-size:14px;cursor:pointer;flex-shrink:0;padding:0 3px;opacity:0.6;}
-.krofi-item:hover .krofi-edit{display:block;}
-.krofi-item .krofi-edit:hover{opacity:1;}
+/* edit via swipe */
 </style>
 </head>
 <body>
@@ -1514,50 +1528,6 @@ document.querySelectorAll("[data-scroll]").forEach(el=>obs.observe(el));
 function openEaster(){document.getElementById("easter-modal").classList.add("open");spawnHearts(10,false);}
 function closeEaster(){document.getElementById("easter-modal").classList.remove("open");}
 
-const KROFI=[
-  [1,"Mercator Ljubljana"],
-  [2,"Amko Bulevar (marmelada)"],
-  [3,"Slatko i slano Cvila"],
-  [4,"Bash (Oreo i Milka)"],
-  [5,"Pekara Gold (šljokice)"],
-  [6,"Pekara radar Mostar"],
-  [7,"Pekara Edi"],
-  [8,"Pekara Rimski most (roza)"],
-  [9,"Pekara Gold (obična)"],
-  [10,"Tarčin resort (roza)"],
-  [11,"Pekara Iman (obična)"],
-  [12,"Petrol Slovenija (ogromna)"],
-  [13,"Pag Novalja pekara"],
-  [14,"Pekara Edi brza cesta"],
-  [15,"Pekara AS Hadžići"],
-  [17,"Pekara Iman (roza)"],
-  [16,"Pekara Bosfor"],
-  [18,"Bulevar (bijela)"],
-  [19,"Graz pekara"],
-  [20,"Penny West Gate"],
-  [21,"Pekara Visoko"],
-  [22,"Omiš Studenac"],
-  [23,"Bulevar (pistacija)"],
-  [24,"Bulevar (čokoladna)"],
-  [25,"Bulevar (lješnjak)"],
-  [26,"Pekara Ukrina"],
-  [27,"Pekara Šanf Kladanj"],
-  [28,"Bihać pekara"],
-  [29,"Pekara Putnik Jablanica"],
-  [30,"Cakan"]
-];
-const MAPA=[
-  ["Konjic",50],["Trebižat",381],["Stolac",319],["Sturba",381],
-  ["Usput put (Bihać → Zavratnica → Pag → Omiš → Split)",1150],
-  ["Mostar",277],["Visočica",102],["Transferzala",102],["Bjela",86],
-  ["Trebević",34],["Nišići",72],["Zelengora",122],["Mostar",240],
-  ["Bjelašnica",48],["Tjentište",220],["Pogorelica",108],["Tuzla",240],
-  ["Mostar",240],["Ljubljana & Graz",1400],["Visočica",86],
-  ["Ozren",30],["Tarčin",70],["Visočica",86],["Trebević",30],
-  ["Pale",52],["Visočica",86],["Split",600],
-  ["Trebević",34],["Jablanica",120],["Bukovik",60],["Prokoško jezero",180],["Visočica",86],
-  ["Bukovik ferata",60]
-];
 
 /* data loaded from Supabase */);
 
