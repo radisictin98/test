@@ -1559,59 +1559,7 @@ const MAPA=[
   ["Bukovik ferata",60]
 ];
 
-function renderKrofi(){
-  const list=document.getElementById("krofi-list");
-  if(!list)return;
-  list.innerHTML="";
-  const KN=KROFI.length;
-  KROFI.forEach(([rank,name])=>{
-    const el=document.createElement("div");
-    el.className="krofi-item";
-    el.style.cssText="opacity:1;transform:none;";
-    el.innerHTML=
-      '<span class="krofi-rank">'+rank+'.</span>'+
-      '<span class="krofi-name" style="flex:1">'+name+'</span>';
-    list.appendChild(el);
-  });
-}
-
-function renderMapa(){
-  const totalKm=MAPA.reduce((s,[,k])=>s+k,0);
-  const maxKm=Math.max(...MAPA.map(([,k])=>k));
-  const statsEl=document.getElementById("mapa-stats");
-  if(statsEl){
-    statsEl.innerHTML=
-      '<div class="mapa-stat"><span class="mapa-stat-num">'+totalKm.toLocaleString("bs")+'</span><span class="mapa-stat-label">Km zajedno</span></div>'+
-      '<div class="mapa-stat"><span class="mapa-stat-num">'+MAPA.length+'</span><span class="mapa-stat-label">Putovanja</span></div>'+
-      '<div class="mapa-stat"><span class="mapa-stat-num">'+Math.round(totalKm/MAPA.length).toLocaleString("bs")+'</span><span class="mapa-stat-label">Prosjek km</span></div>';
-  }
-  const mlist=document.getElementById("mapa-list");
-  if(!mlist)return;
-  mlist.innerHTML="";
-  MAPA.forEach(([dest,km])=>{
-    const bw=Math.round((km/maxKm)*100);
-    const el=document.createElement("div");
-    el.className="mapa-item";
-    el.style.cssText="opacity:1;transform:none;";
-    el.innerHTML=
-      '<div class="mapa-dot"></div>'+
-      '<div style="flex:1;min-width:0">'+
-        '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">'+
-          '<span class="mapa-dest">Sarajevo → '+dest+'</span>'+
-          '<span class="mapa-km">'+km.toLocaleString("bs")+' km</span>'+
-        '</div>'+
-        '<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:'+bw+'%"></div></div>'+
-      '</div>';
-    mlist.appendChild(el);
-  });
-}
-
-/* data loaded from Supabase */
-document.getElementById("main").addEventListener("transitionend", function once(){
-  renderKrofi();
-  renderMapa();
-  this.removeEventListener("transitionend", once);
-});
+/* data loaded from Supabase */);
 
 /* POJEST CU TE */
 function pojestCuTe(){
