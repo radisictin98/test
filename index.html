@@ -567,18 +567,18 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
     <div class="pin-dot" id="pd3"></div>
   </div>
   <div class="pin-pad">
-    <button class="pin-key" type="button">1</button>
-    <button class="pin-key" type="button">2</button>
-    <button class="pin-key" type="button">3</button>
-    <button class="pin-key" type="button">4</button>
-    <button class="pin-key" type="button">5</button>
-    <button class="pin-key" type="button">6</button>
-    <button class="pin-key" type="button">7</button>
-    <button class="pin-key" type="button">8</button>
-    <button class="pin-key" type="button">9</button>
+    <button class="pin-key" type="button" onclick="pinKey('1')">1</button>
+    <button class="pin-key" type="button" onclick="pinKey('2')">2</button>
+    <button class="pin-key" type="button" onclick="pinKey('3')">3</button>
+    <button class="pin-key" type="button" onclick="pinKey('4')">4</button>
+    <button class="pin-key" type="button" onclick="pinKey('5')">5</button>
+    <button class="pin-key" type="button" onclick="pinKey('6')">6</button>
+    <button class="pin-key" type="button" onclick="pinKey('7')">7</button>
+    <button class="pin-key" type="button" onclick="pinKey('8')">8</button>
+    <button class="pin-key" type="button" onclick="pinKey('9')">9</button>
     <button class="pin-key empty"></button>
-    <button class="pin-key" type="button">0</button>
-    <button class="pin-key del" type="button">⌫</button>
+    <button class="pin-key" type="button" onclick="pinKey('0')">0</button>
+    <button class="pin-key del" type="button" onclick="pinKey('del')">⌫</button>
   </div>
 </div>
 
@@ -1541,73 +1541,44 @@ function pojestCuTe(){
 
 
 /* ── PIN ── */
-(function(){
-  const CORRECT = ['2','6','1','0'].join('');
-  let entered = '';
+var _pinEntered = '';
+var _pinCorrect = '2610';
 
-  function updateDots(){
-    for(let i=0;i<4;i++){
-      const d=document.getElementById('pd'+i);
-      if(!d) return;
-      d.classList.toggle('filled', i<entered.length);
-      d.classList.remove('error');
+function pinKey(val) {
+  if (val === 'del') {
+    if (_pinEntered.length > 0) {
+      _pinEntered = _pinEntered.slice(0, -1);
+      _pinUpdateDots();
     }
+    return;
   }
-
-  function pressKey(val){
-    if(val==='del'){
-      if(entered.length>0){ entered=entered.slice(0,-1); updateDots(); }
-      return;
-    }
-    if(entered.length>=4) return;
-    entered+=val;
-    updateDots();
-    if(entered.length===4){
-      if(entered===CORRECT){
-        const s=document.getElementById('pin-screen');
-        s.classList.add('hide');
-        setTimeout(()=>{ if(s&&s.parentNode) s.parentNode.removeChild(s); }, 800);
-        if(typeof spawnHearts==='function') spawnHearts(20,false);
-      } else {
-        for(let i=0;i<4;i++){
-          const d=document.getElementById('pd'+i);
-          if(d) d.classList.add('error');
-        }
-        setTimeout(()=>{ entered=''; updateDots(); }, 700);
+  if (_pinEntered.length >= 4) return;
+  _pinEntered += val;
+  _pinUpdateDots();
+  if (_pinEntered.length === 4) {
+    if (_pinEntered === _pinCorrect) {
+      var s = document.getElementById('pin-screen');
+      s.classList.add('hide');
+      setTimeout(function(){ if(s && s.parentNode) s.parentNode.removeChild(s); }, 800);
+      if(typeof spawnHearts === 'function') spawnHearts(20, false);
+    } else {
+      for (var i = 0; i < 4; i++) {
+        var d = document.getElementById('pd' + i);
+        if (d) d.classList.add('error');
       }
+      setTimeout(function(){ _pinEntered = ''; _pinUpdateDots(); }, 700);
     }
   }
+}
 
-  function attachPinListeners(){
-    document.querySelectorAll('.pin-key').forEach(function(btn){
-      if(btn.classList.contains('empty')) return;
-      const val = btn.classList.contains('del') ? 'del' : btn.textContent.trim();
-      btn.addEventListener('touchend', function(e){
-        e.preventDefault();
-        pressKey(val);
-      }, {passive:false});
-      btn.addEventListener('click', function(e){
-        e.stopPropagation();
-        pressKey(val);
-      });
-    });
+function _pinUpdateDots() {
+  for (var i = 0; i < 4; i++) {
+    var d = document.getElementById('pd' + i);
+    if (!d) return;
+    d.classList.toggle('filled', i < _pinEntered.length);
+    d.classList.remove('error');
   }
-
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded', attachPinListeners);
-  } else {
-    attachPinListeners();
-  }
-
-  document.addEventListener('keydown', function(e){
-    const pinScreen = document.getElementById('pin-screen');
-    if(!pinScreen || pinScreen.classList.contains('hide')) return;
-    const adminOpen = document.getElementById('admin-pin-overlay');
-    if(adminOpen && adminOpen.classList.contains('open')) return;
-    if(e.key>='0'&&e.key<='9') pressKey(e.key);
-    if(e.key==='Backspace') pressKey('del');
-  });
-})();
+}
 
 /* ══════════════════════════════════════
    SUPABASE INTEGRATION
