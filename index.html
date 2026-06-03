@@ -1791,6 +1791,76 @@ function deletePut(id, dest) {
   });
 }
 
+/* ── SWIPE HELPER ── */
+function addSwipe(inner, wrap, onRight, onLeft) {
+  let startX=0, startY=0, curX=0, swiping=false, axisLocked=false, axis=null;
+  const THRESHOLD=80;
+
+  function getDelBg(){ return wrap.querySelector('.del-bg'); }
+  function getEditBg(){ return wrap.querySelector('.edit-bg'); }
+
+  function onTouchStart(e){
+    startX=e.touches[0].clientX;
+    startY=e.touches[0].clientY;
+    curX=0; swiping=true; axisLocked=false; axis=null;
+    inner.style.transition='none';
+  }
+  function onTouchMove(e){
+    if(!swiping) return;
+    const dx=e.touches[0].clientX-startX;
+    const dy=e.touches[0].clientY-startY;
+    if(!axisLocked){
+      if(Math.abs(dx)>8||Math.abs(dy)>8){
+        axis=Math.abs(dx)>Math.abs(dy)?'x':'y';
+        axisLocked=true;
+      }
+    }
+    if(axis!=='x') return;
+    e.preventDefault();
+    curX=dx;
+    inner.style.transform=`translateX(${curX}px)`;
+    const pct=Math.min(Math.abs(curX)/THRESHOLD,1);
+    const delBg=getDelBg(), editBg=getEditBg();
+    if(curX>0&&onRight){ // swipe right = delete
+      if(delBg) delBg.style.opacity=pct;
+      if(editBg) editBg.style.opacity=0;
+    } else if(curX<0&&onLeft){ // swipe left = edit
+      if(editBg) editBg.style.opacity=pct;
+      if(delBg) delBg.style.opacity=0;
+    } else {
+      if(delBg) delBg.style.opacity=0;
+      if(editBg) editBg.style.opacity=0;
+    }
+  }
+  function onTouchEnd(){
+    if(!swiping||axis!=='x'){
+      inner.style.transition=''; inner.style.transform=''; swiping=false; return;
+    }
+    swiping=false;
+    inner.style.transition='transform 0.25s cubic-bezier(0.4,0,0.2,1)';
+    const delBg=getDelBg(), editBg=getEditBg();
+    if(curX>THRESHOLD&&onRight){
+      inner.style.transform=`translateX(110%)`;
+      setTimeout(()=>{
+        inner.style.transition=''; inner.style.transform='';
+        if(delBg) delBg.style.opacity=0;
+        onRight();
+      },300);
+    } else if(curX<-THRESHOLD&&onLeft){
+      inner.style.transform='';
+      if(editBg) editBg.style.opacity=0;
+      onLeft();
+    } else {
+      inner.style.transform='';
+      if(delBg) delBg.style.opacity=0;
+      if(editBg) editBg.style.opacity=0;
+    }
+  }
+  inner.addEventListener('touchstart',onTouchStart,{passive:true});
+  inner.addEventListener('touchmove',onTouchMove,{passive:false});
+  inner.addEventListener('touchend',onTouchEnd,{passive:true});
+}
+
 /* ── LOAD & RENDER KROFNE (all from DB) ── */
 async function loadKrofneFromDB() {
   const krofne=await sbFetch('GET','krofne','','?select=*&order=rang.asc');
@@ -1803,25 +1873,39 @@ async function loadKrofneFromDB() {
     const rang=i+1;
     const h=Math.round(120-(rang/total)*120);
     const bw=Math.round(((total-rang+1)/total)*100);
-    const el=document.createElement('div');
-    el.className='krofi-item'+(k.slika_base64?' has-photo':'');
-    el.style.cssText='opacity:1;transform:none;';
-    if(k.slika_base64) el.onclick=(e)=>{
-      if(!e.target.classList.contains('krofi-del')&&!e.target.classList.contains('krofi-edit')) openKrofnaViewer(k.slika_base64,k.naziv);
-    };
-    el.innerHTML=
+
+    // Inner item
+    const item=document.createElement('div');
+    item.className='krofi-item'+(k.slika_base64?' has-photo':'');
+    item.style.cssText='opacity:1;transform:none;border-radius:10px;';
+    item.innerHTML=
       `<span class="krofi-rank">${rang}.</span>`+
       `<div style="flex:2;min-width:0">`+
         `<div class="krofi-name">${k.naziv}</div>`+
         `<div class="krofi-bar-wrap"><div class="krofi-bar" style="width:${bw}%;background:hsl(${h},65%,50%)"></div></div>`+
       `</div>`+
-      (k.slika_base64?`<img class="krofi-thumb" src="${k.slika_base64}" alt="">`:'')+
-      `<button class="krofi-edit" onclick="event.stopPropagation();openEditKrofna('${k.id}','${k.naziv.replace(/'/g,"\'")}','${k.rang}','${k.slika_base64||''}')" title="Uredi">✏️</button>`+
-      `<button class="krofi-del" onclick="event.stopPropagation();deleteKrofna('${k.id}','${k.naziv.replace(/'/g,"\'")}');" title="Obriši">✕</button>`;
-    list.appendChild(el);
+      (k.slika_base64?`<img class="krofi-thumb" src="${k.slika_base64}" alt="">`:'');
+
+    if(k.slika_base64) item.addEventListener('click', ()=>openKrofnaViewer(k.slika_base64,k.naziv));
+
+    // Wrap with swipe
+    const wrap=document.createElement('div');
+    wrap.className='swipe-item-wrap';
+    const delBg=document.createElement('div');  delBg.className='swipe-bg del-bg';
+    const editBg=document.createElement('div'); editBg.className='swipe-bg edit-bg';
+    const inner=document.createElement('div');  inner.className='swipe-inner';
+    inner.appendChild(item);
+    wrap.appendChild(delBg);
+    wrap.appendChild(editBg);
+    wrap.appendChild(inner);
+    list.appendChild(wrap);
+
+    addSwipe(inner, wrap,
+      ()=>deleteKrofna(k.id, k.naziv),
+      ()=>openEditKrofna(k.id, k.naziv, k.rang, k.slika_base64||'')
+    );
   });
 }
-
 /* ── KROFNA IMAGE VIEWER ── */
 function openKrofnaViewer(src,naziv) {
   document.getElementById('kv-img').src=src;
@@ -1837,7 +1921,7 @@ async function loadPutovanjaFromDB() {
   const puts=await sbFetch('GET','putovanja','','?select=*&order=created_at.asc');
   if(!puts) return;
   const totalKm=puts.reduce((s,p)=>s+p.km,0);
-  const maxKm=Math.max(...puts.map(p=>p.km));
+  const maxKm=Math.max(...puts.map(p=>p.km),1);
   const statsEl=document.getElementById('mapa-stats');
   if(statsEl) {
     statsEl.innerHTML=
@@ -1850,10 +1934,11 @@ async function loadPutovanjaFromDB() {
   mlist.innerHTML='';
   puts.forEach(p=>{
     const bw=Math.round((p.km/maxKm)*100);
-    const el=document.createElement('div');
-    el.className='mapa-item';
-    el.style.cssText='opacity:1;transform:none;';
-    el.innerHTML=
+
+    const item=document.createElement('div');
+    item.className='mapa-item';
+    item.style.cssText='opacity:1;transform:none;border-radius:10px;';
+    item.innerHTML=
       `<div class="mapa-dot"></div>`+
       `<div style="flex:1;min-width:0">`+
         `<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:8px">`+
@@ -1861,12 +1946,24 @@ async function loadPutovanjaFromDB() {
           `<span class="mapa-km">${p.km.toLocaleString('bs')} km</span>`+
         `</div>`+
         `<div class="mapa-km-bar"><div class="mapa-km-fill" style="width:${bw}%"></div></div>`+
-      `</div>`+
-      `<button class="mapa-del" style="display:block" onclick="deletePut('${p.id}','${p.destinacija.replace(/'/g,"\'")}')">✕</button>`;
-    mlist.appendChild(el);
+      `</div>`;
+
+    const wrap=document.createElement('div');
+    wrap.className='swipe-item-wrap';
+    const delBg=document.createElement('div');  delBg.className='swipe-bg del-bg';
+    const inner=document.createElement('div');  inner.className='swipe-inner';
+    inner.appendChild(item);
+    wrap.appendChild(delBg);
+    wrap.appendChild(inner);
+    mlist.appendChild(wrap);
+
+    // Putovanja: swipe right = delete only (no edit)
+    addSwipe(inner, wrap,
+      ()=>deletePut(p.id, p.destinacija),
+      null
+    );
   });
 }
-
 /* ── INIT ── */
 async function initSupabase() {
   await Promise.all([loadKrofneFromDB(), loadPutovanjaFromDB()]);
