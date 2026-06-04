@@ -519,7 +519,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   font-size: 20px;
   gap: 8px;
 }
-.swipe-row-bg.bg-del::after { content: '🗑'; font-size: 22px; }
+.swipe-row-bg.bg-del::after { content: '✕  Obriši'; font-size: 15px; letter-spacing:0.05em; }
 .swipe-row-bg.bg-edit {
   background: #1a5276;
   color: #fff;
@@ -527,7 +527,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   font-size: 20px;
   gap: 8px;
 }
-.swipe-row-bg.bg-edit::before { content: '✏️'; font-size: 22px; }
+.swipe-row-bg.bg-edit::before { content: 'Uredi  ✎'; font-size: 15px; letter-spacing:0.05em; }
 .swipe-row-inner {
   position: relative;
   z-index: 1;
@@ -636,8 +636,8 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   <section class="hero">
     <div class="hero-glow"></div>
     <p class="hero-date">7. juni</p>
-    <h1>Naša <em>priča</em><br>počela je<br>pod zvijezdama</h1>
-    <p class="hero-sub">između vjetrenjača i divljih konja</p>
+    <h1>Za početak<br>naše <em>ljubavi</em></h1>
+    <p class="hero-sub">Nastavi za mali dio naše priče</p>
     <div class="divider"></div>
     <p class="hero-message">Za neke spontane odluke ne bih očekivao da ce mi promijeniti život, ali izgleda da mogu. Jedan glupi poziv i jedno glupo "da" na taj poziv su me učinili najzaljubljenijom osobom na svijetu, a to nikada nisam mogao očekivati. Eto, prošla je godina od mog odazivanja na taj poziv, a ja i dalje nisam siguran da li mi djeluje kao da je prošlo 5 dana ili 5 godina.</p>
     <p class="hero-message-bold">Od tada znam da si ti moja osoba.</p>
@@ -1661,6 +1661,7 @@ async function sbQ(method, table, body, query) {
 
 /* Modal helpers */
 var sbKrofnaImg = null;
+var sbKrofnaFile = null;
 
 function sbOpenModal(type, data) {
   if (type === 'krofna') {
@@ -1700,12 +1701,28 @@ function sbBgClose(e, type) {
 function sbPreviewImg(inp, prevId) {
   var f = inp.files[0];
   if (!f) return;
-  var fr = new FileReader();
-  fr.onload = function(e) {
-    sbKrofnaImg = e.target.result;
-    document.getElementById(prevId).innerHTML = '<img src="' + e.target.result + '">';
-  };
-  fr.readAsDataURL(f);
+  sbKrofnaFile = f; // store file for upload
+  var url = URL.createObjectURL(f);
+  sbKrofnaImg = url; // local preview
+  document.getElementById(prevId).innerHTML = '<img src="' + url + '">';
+}
+
+async function sbUploadImg(file) {
+  // Upload to Supabase Storage
+  var ext = file.name.split('.').pop() || 'jpg';
+  var fname = 'krofna_' + Date.now() + '.' + ext;
+  var res = await fetch(SB_URL + '/storage/v1/object/krofne/' + fname, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': file.type || 'image/jpeg',
+      'x-upsert': 'true'
+    },
+    body: file
+  });
+  if (!res.ok) { console.error('Storage upload failed', res.status); return null; }
+  return SB_URL + '/storage/v1/object/public/krofne/' + fname;
 }
 
 /* Save krofna */
@@ -1716,15 +1733,19 @@ async function sbSaveKrofna() {
   if (!naziv || !rang) { alert('Popunite sva polja!'); return; }
   var btn = document.getElementById('sb-k-btn');
   btn.disabled = true; btn.textContent = 'Cuvam...';
+  // Upload image to storage if new file selected
+  var slikaUrl = null;
+  if (sbKrofnaFile) {
+    slikaUrl = await sbUploadImg(sbKrofnaFile);
+    sbKrofnaFile = null;
+  }
   var ok;
   if (id) {
-    // When editing: only update naziv and slika, preserve rang (managed by drag-drop)
     var patch = {naziv: naziv};
-    if (sbKrofnaImg) patch.slika_base64 = sbKrofnaImg;
+    if (slikaUrl) { patch.slika_url = slikaUrl; patch.slika_base64 = null; }
     ok = await sbQ('PATCH', 'krofne', patch, '?id=eq.' + id);
   } else {
-    // When adding new: rang determines position
-    ok = await sbQ('POST', 'krofne', {naziv: naziv, rang: rang, slika_base64: sbKrofnaImg || null});
+    ok = await sbQ('POST', 'krofne', {naziv: naziv, rang: rang, slika_url: slikaUrl, slika_base64: null});
   }
   btn.disabled = false; btn.textContent = 'Sacuvaj';
   if (ok) { sbCloseModal('krofna'); sbLoadKrofne(); }
@@ -1772,15 +1793,16 @@ function sbEditKrofnaById(k) {
 
 /* Load and render krofne */
 async function sbLoadKrofne() {
-  var data = await sbQ('GET', 'krofne', null, '?select=*&order=rang.asc');
+  var data = await sbQ('GET', 'krofne', null, '?select=id,naziv,rang,slika_url,slika_base64&order=rang.asc');
   if (!data) return;
   var list = document.getElementById('krofi-list');
   if (!list) return;
   list.innerHTML = '';
   for (var i = 0; i < data.length; i++) {
     var k = data[i];
-    var thumb = k.slika_base64
-      ? '<img class="krofi-thumb" src="' + k.slika_base64 + '" onclick="sbViewImg(\'' + k.naziv.replace(/'/g, "\\'") + '\',\'' + k.id + '\')" alt="">'
+    var slikaSrc = k.slika_url || k.slika_base64 || null;
+    var thumb = slikaSrc
+      ? '<img class="krofi-thumb" src="' + slikaSrc + '" onclick="sbViewImg(\'' + k.naziv.replace(/'/g, "\\'") + '\',\'' + k.id + '\')" alt="">'
       : '';
     var dataAttr = 'data-id="' + k.id + '" data-naziv="' + k.naziv.replace(/"/g, '&quot;') + '" data-rang="' + k.rang + '" data-slika="' + (k.slika_base64 ? '1' : '') + '"';
     var item = document.createElement('div');
@@ -1827,13 +1849,10 @@ function sbEditKrofna(btn) {
 }
 
 function sbViewImg(naziv, id) {
-  // Find the image src from the rendered list
-  var thumbs = document.querySelectorAll('.krofi-thumb');
-  var src = null;
-  for (var i = 0; i < thumbs.length; i++) {
-    var btn = thumbs[i].parentElement.querySelector('[data-id="' + id + '"]');
-    if (btn) { src = thumbs[i].src; break; }
-  }
+  // Find thumb src from rendered list
+  var row = document.querySelector('#krofi-list [data-row-id="' + id + '"]');
+  var thumb = row ? row.querySelector('.krofi-thumb') : null;
+  var src = thumb ? thumb.getAttribute('src') : null;
   if (!src) return;
   document.getElementById('kv-img').src = src;
   document.getElementById('kv-name').textContent = naziv;
@@ -2082,6 +2101,15 @@ function makeSwipeable(rowEl, onSwipeLeft, onSwipeRight) {
   }, {passive: true});
 }
 
+
+/* Days together counter */
+(function(){
+  var start = new Date(2025, 5, 7); // 7. juni 2025
+  var now = new Date();
+  var diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+  var el = document.getElementById('days-together');
+  if (el) el.textContent = diff.toLocaleString('bs');
+})();
 </script>
 </body>
 </html>
