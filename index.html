@@ -565,7 +565,6 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   height: 100%;
   object-fit: contain;
   animation: duckBob 0.35s ease-in-out infinite alternate;
-  mix-blend-mode: screen;
 }
 #walking-duck.flipped img { transform: scaleX(-1); }
 @keyframes duckBob {
@@ -1550,23 +1549,43 @@ function closeEaster(){
 function startWalkingDuck(){
   var duck=document.getElementById("walking-duck");
   if(!duck||duck.classList.contains("active")) return;
-  // Remove white background using canvas
+  // Remove ONLY background white using flood-fill from corners
   var img=duck.querySelector("img");
   if(img && !img.getAttribute("data-bg-removed")){
-    var canvas=document.createElement("canvas");
-    canvas.width=img.naturalWidth||200;
-    canvas.height=img.naturalHeight||200;
-    var ctx=canvas.getContext("2d");
-    ctx.drawImage(img,0,0,canvas.width,canvas.height);
-    var d=ctx.getImageData(0,0,canvas.width,canvas.height);
-    for(var i=0;i<d.data.length;i+=4){
-      var r=d.data[i],g=d.data[i+1],b=d.data[i+2];
-      // Make white/near-white pixels transparent
-      if(r>220&&g>220&&b>220) d.data[i+3]=0;
-    }
-    ctx.putImageData(d,0,0);
-    img.src=canvas.toDataURL("image/png");
-    img.setAttribute("data-bg-removed","1");
+    var doRemove=function(){
+      var canvas=document.createElement("canvas");
+      var w=img.naturalWidth||200, h=img.naturalHeight||200;
+      canvas.width=w; canvas.height=h;
+      var ctx=canvas.getContext("2d");
+      ctx.drawImage(img,0,0,w,h);
+      var d=ctx.getImageData(0,0,w,h);
+      var data=d.data;
+      var visited=new Uint8Array(w*h);
+      // Flood fill from all 4 corners
+      var queue=[];
+      function enqueue(x,y){
+        if(x<0||x>=w||y<0||y>=h) return;
+        var idx=(y*w+x);
+        if(visited[idx]) return;
+        var p=idx*4;
+        if(data[p]>200&&data[p+1]>200&&data[p+2]>200){
+          visited[idx]=1;
+          queue.push(x,y);
+        }
+      }
+      enqueue(0,0); enqueue(w-1,0); enqueue(0,h-1); enqueue(w-1,h-1);
+      while(queue.length){
+        var x=queue.shift(), y=queue.shift();
+        var p=(y*w+x)*4;
+        data[p+3]=0; // transparent
+        enqueue(x+1,y); enqueue(x-1,y); enqueue(x,y+1); enqueue(x,y-1);
+      }
+      ctx.putImageData(d,0,0);
+      img.src=canvas.toDataURL("image/png");
+      img.setAttribute("data-bg-removed","1");
+    };
+    if(img.complete && img.naturalWidth) doRemove();
+    else img.onload=doRemove;
   }
   duck.classList.add("active");
   var x=-80, dir=1, speed=1.5, duckW=72;
