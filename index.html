@@ -1541,7 +1541,28 @@ document.querySelectorAll("[data-scroll]").forEach(el=>obs.observe(el));
 
 /* EASTER EGG */
 function openEaster(){document.getElementById("easter-modal").classList.add("open");spawnHearts(10,false);}
-function closeEaster(){document.getElementById("easter-modal").classList.remove("open");}
+function closeEaster(){
+  document.getElementById("easter-modal").classList.remove("open");
+  startWalkingDuck();
+}
+
+function startWalkingDuck(){
+  var duck=document.getElementById("walking-duck");
+  if(!duck||duck.classList.contains("active")) return;
+  duck.classList.add("active");
+  var x=-80, dir=1, speed=1.5, duckW=72;
+  duck.style.left=x+"px";
+  duck.classList.remove("flipped");
+  function step(){
+    x+=speed*dir;
+    var vw=window.innerWidth;
+    if(x+duckW>=vw){ x=vw-duckW; dir=-1; duck.classList.add("flipped"); speed=1.0+Math.random()*1.2; }
+    else if(x<=-duckW){ x=-duckW; dir=1; duck.classList.remove("flipped"); speed=1.0+Math.random()*1.2; }
+    duck.style.left=x+"px";
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
 
 const KROFI=[
   [1,"Mercator Ljubljana"],
