@@ -551,7 +551,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 /* ── WALKING DUCK ── */
 #walking-duck {
   position: fixed;
-  bottom: 0;
+  top: 0;
   z-index: 8999;
   pointer-events: none;
   display: none;
@@ -1591,6 +1591,7 @@ function startWalkingDuck(){
   var x=-80, dir=1, speed=1.5, duckW=72;
   duck.style.left=x+"px";
   duck.classList.remove("flipped");
+  duck.style.top='0px';
   function step(){
     x+=speed*dir;
     var vw=window.innerWidth;
