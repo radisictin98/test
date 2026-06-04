@@ -1082,7 +1082,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 <section class="letter-section">
     <div class="letter-inner">
       <p class="section-tag" style="margin-bottom:40px;">Pismo tebi</p>
-      <p class="letter-text">Hvala ti što si mi učinila ovih 365 dana najljepšim u životu.<br><br>Hvala ti na svakom pogledu, zagrljaju, dodiru i poljupcu. Hvala ti što si probudila u meni nešto što nisam znao da imam. <br><br><em>Nadam se da ću do kraja života praviti ovakve stvari za nas.</em></p>
+      <p class="letter-text">Hvala ti što si mi učinila ovih <span id="days-together">365</span> dana najljepšim u životu.<br><br>Hvala ti na svakom pogledu, zagrljaju, dodiru i poljupcu. Hvala ti što si probudila u meni nešto što nisam znao da imam. <br><br><em>Nadam se da ću do kraja života praviti ovakve stvari za nas.</em></p>
       <p class="signature">Voli te tvoj Tinkica ❤</p>
     </div>
   </section>
@@ -2107,6 +2107,14 @@ function makeSwipeable(rowEl, onSwipeLeft, onSwipeRight) {
   var start = new Date(2025, 5, 7); // 7. juni 2025
   var now = new Date();
   var diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+  var el = document.getElementById('days-together');
+  if (el) el.textContent = diff.toLocaleString('bs');
+})();
+
+/* ── DAYS TOGETHER ── */
+(function(){
+  var start = new Date(2025, 5, 7);
+  var diff = Math.floor((new Date() - start) / 86400000);
   var el = document.getElementById('days-together');
   if (el) el.textContent = diff.toLocaleString('bs');
 })();
