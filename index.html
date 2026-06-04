@@ -515,19 +515,23 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 .swipe-row-bg.bg-del {
   background: #922b21;
   color: #fff;
-  justify-content: flex-end;
-  font-size: 20px;
+  justify-content: flex-start;
+  padding-left: 20px;
+  font-size: 15px;
+  letter-spacing: 0.05em;
   gap: 8px;
 }
-.swipe-row-bg.bg-del::after { content: '✕  Obriši'; font-size: 15px; letter-spacing:0.05em; }
+.swipe-row-bg.bg-del::before { content: '🗑 Obriši'; }
 .swipe-row-bg.bg-edit {
   background: #1a5276;
   color: #fff;
-  justify-content: flex-start;
-  font-size: 20px;
+  justify-content: flex-end;
+  padding-right: 20px;
+  font-size: 15px;
+  letter-spacing: 0.05em;
   gap: 8px;
 }
-.swipe-row-bg.bg-edit::before { content: 'Uredi  ✎'; font-size: 15px; letter-spacing:0.05em; }
+.swipe-row-bg.bg-edit::after { content: 'Uredi ✎'; }
 .swipe-row-inner {
   position: relative;
   z-index: 1;
