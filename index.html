@@ -1327,7 +1327,10 @@ function goTo(idx){
   dots.forEach((d,i)=>d.classList.toggle("active",i===dotIdx));
   if(cur===liveTotal-1&&!quizShown){quizShown=true;sessionStorage.setItem('quizShown','1');setTimeout(openQuiz,1000);}
 }
-function carouselNext(){if(cur<total-1)goTo(cur+1);}
+function carouselNext(){
+  const lt=inner.querySelectorAll(".slide").length;
+  if(cur<lt-1)goTo(cur+1);
+}
 function carouselPrev(){if(cur>0)goTo(cur-1);}
 
 let tx=0,ty=0;
@@ -2234,9 +2237,8 @@ async function sbLoadMomenti() {
       dotsWrap.appendChild(m);
     }
   }
-  // Re-enable next button if we were on last slide before
-  var nextBtn = document.getElementById('next-btn');
-  if (nextBtn) nextBtn.disabled = cur >= liveCount - 1;
+  // Call goTo(cur) to fully refresh nav state with new slide count
+  goTo(cur);
 }
 
 // Load moments after main is visible
