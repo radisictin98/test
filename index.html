@@ -1325,7 +1325,7 @@ function goTo(idx){
   const dots=dotsWrap.querySelectorAll(".dot");
   const dotIdx=cur<MAX_DOTS?cur:MAX_DOTS-1;
   dots.forEach((d,i)=>d.classList.toggle("active",i===dotIdx));
-  if(cur===liveTotal-1&&!quizShown){quizShown=true;sessionStorage.setItem('quizShown','1');setTimeout(openQuiz,1000);}
+  if(cur===liveTotal-1&&sessionStorage.getItem('quizShown')!=='1'){sessionStorage.setItem('quizShown','1');setTimeout(openQuiz,1000);}
 }
 function carouselNext(){
   const lt=inner.querySelectorAll(".slide").length;
@@ -2237,8 +2237,11 @@ async function sbLoadMomenti() {
       dotsWrap.appendChild(m);
     }
   }
-  // Call goTo(cur) to fully refresh nav state with new slide count
+  // Refresh nav state — suppress quiz during this refresh
+  var _sq=sessionStorage.getItem('quizShown');
+  sessionStorage.setItem('quizShown','1');
   goTo(cur);
+  if(!_sq) sessionStorage.removeItem('quizShown');
 }
 
 // Load moments after main is visible
