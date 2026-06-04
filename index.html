@@ -1606,49 +1606,43 @@ function pojestCuTe(){
 
 /* ── PIN ── */
 (function(){
-  // Simple obfuscation — split so it's not trivially grepped
-  const _p = ['2','6','1','0'].join('');
-  let entered = '';
+  var _p = null;
+  var _entered = '';
 
-  function updateDots(){
-    for(let i=0;i<4;i++){
-      const d=document.getElementById('pd'+i);
-      d.classList.toggle('filled', i<entered.length);
-      d.classList.remove('error');
+  // Fetch PIN from Supabase — not stored in code
+  fetch('https://xwiuxydurinuzyeihbkq.supabase.co/rest/v1/config?key=eq.login_pin&select=value', {
+    headers: {'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3aXV4eWR1cmludXp5ZWloYmtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NzQzNTYsImV4cCI6MjA5NjA1MDM1Nn0.P6VZAU5jld8txhZPXvQVptoyY8gGc3snMisSL5sZbYs','Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3aXV4eWR1cmludXp5ZWloYmtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NzQzNTYsImV4cCI6MjA5NjA1MDM1Nn0.P6VZAU5jld8txhZPXvQVptoyY8gGc3snMisSL5sZbYs'}
+  }).then(function(r){return r.json();})
+    .then(function(d){if(d&&d[0])_p=d[0].value;})
+    .catch(function(){});
+
+  function _upd(){
+    for(var i=0;i<4;i++){
+      var d=document.getElementById('pd'+i);
+      if(d){d.classList.toggle('filled',i<_entered.length);d.classList.remove('error');}
     }
   }
 
   window.pinPress = function(k){
-    if(entered.length>=4) return;
-    entered += k;
-    updateDots();
-    if(entered.length===4){
-      if(entered===_p){
-        const s=document.getElementById('pin-screen');
+    if(!_p||_entered.length>=4) return;
+    _entered+=k; _upd();
+    if(_entered.length===4){
+      if(_entered===_p){
+        var s=document.getElementById('pin-screen');
         s.classList.add('hide');
-        setTimeout(()=>s.remove(), 700);
+        setTimeout(function(){if(s&&s.parentNode)s.parentNode.removeChild(s);},700);
       } else {
-        // wrong — shake and reset
-        for(let i=0;i<4;i++) document.getElementById('pd'+i).classList.add('error');
-        setTimeout(()=>{ entered=''; updateDots(); }, 700);
+        for(var i=0;i<4;i++){var d=document.getElementById('pd'+i);if(d)d.classList.add('error');}
+        setTimeout(function(){_entered='';_upd();},700);
       }
     }
   };
 
   window.pinDel = function(){
-    if(entered.length>0){ entered=entered.slice(0,-1); updateDots(); }
+    if(_entered.length>0){_entered=_entered.slice(0,-1);_upd();}
   };
-
-  // Also allow physical keyboard
-  document.addEventListener('keydown', e=>{
-    if(document.getElementById('pin-screen')){
-      if(e.key>='0'&&e.key<='9') pinPress(e.key);
-      if(e.key==='Backspace') pinDel();
-    }
-  });
 })();
 
-/* ══ SUPABASE ══ */
 var SB_URL = 'https://xwiuxydurinuzyeihbkq.supabase.co';
 var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3aXV4eWR1cmludXp5ZWloYmtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0NzQzNTYsImV4cCI6MjA5NjA1MDM1Nn0.P6VZAU5jld8txhZPXvQVptoyY8gGc3snMisSL5sZbYs';
 
