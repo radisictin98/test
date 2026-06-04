@@ -1368,6 +1368,17 @@ function goTo(idx){
   const dotIdx=cur<MAX_DOTS?cur:MAX_DOTS-1;
   dots.forEach((d,i)=>d.classList.toggle("active",i===dotIdx));
   if(cur===liveTotal-1&&sessionStorage.getItem('quizShown')!=='1'){sessionStorage.setItem('quizShown','1');setTimeout(openQuiz,1000);}
+  // Preload next and prev slides
+  var allSlides=inner.querySelectorAll('.slide img');
+  [cur-1,cur,cur+1,cur+2].forEach(function(i){
+    if(i>=0&&i<allSlides.length){
+      var img=allSlides[i];
+      if(img.getAttribute('loading')==='lazy'){
+        img.setAttribute('loading','eager');
+        if(img.dataset.src){img.src=img.dataset.src;}
+      }
+    }
+  });
 }
 function carouselNext(){
   const lt=inner.querySelectorAll(".slide").length;
@@ -2314,18 +2325,35 @@ function sbPreviewMoment(inp) {
   document.getElementById('sb-m-preview').innerHTML = '<img src="' + url + '">';
 }
 
+async function sbCompressImg(file, maxW, quality) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+    img.onload = function() {
+      var w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(function(blob) { resolve(blob); }, 'image/jpeg', quality);
+    };
+    img.src = url;
+  });
+}
+
 async function sbUploadMomentImg(file) {
-  var ext = file.name.split('.').pop() || 'jpg';
-  var fname = 'moment_' + Date.now() + '.' + ext;
+  var blob = await sbCompressImg(file, 1400, 0.82);
+  var fname = 'moment_' + Date.now() + '.jpg';
   var res = await fetch(SB_URL + '/storage/v1/object/krofne/' + fname, {
     method: 'POST',
     headers: {
       'apikey': SB_KEY,
       'Authorization': 'Bearer ' + SB_KEY,
-      'Content-Type': file.type || 'image/jpeg',
+      'Content-Type': 'image/jpeg',
       'x-upsert': 'true'
     },
-    body: file
+    body: blob
   });
   if (!res.ok) { console.error('Upload failed', res.status); return null; }
   return SB_URL + '/storage/v1/object/public/krofne/' + fname;
