@@ -565,6 +565,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   height: 100%;
   object-fit: contain;
   animation: duckBob 0.35s ease-in-out infinite alternate;
+  mix-blend-mode: screen;
 }
 #walking-duck.flipped img { transform: scaleX(-1); }
 @keyframes duckBob {
@@ -1549,6 +1550,24 @@ function closeEaster(){
 function startWalkingDuck(){
   var duck=document.getElementById("walking-duck");
   if(!duck||duck.classList.contains("active")) return;
+  // Remove white background using canvas
+  var img=duck.querySelector("img");
+  if(img && !img.getAttribute("data-bg-removed")){
+    var canvas=document.createElement("canvas");
+    canvas.width=img.naturalWidth||200;
+    canvas.height=img.naturalHeight||200;
+    var ctx=canvas.getContext("2d");
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    var d=ctx.getImageData(0,0,canvas.width,canvas.height);
+    for(var i=0;i<d.data.length;i+=4){
+      var r=d.data[i],g=d.data[i+1],b=d.data[i+2];
+      // Make white/near-white pixels transparent
+      if(r>220&&g>220&&b>220) d.data[i+3]=0;
+    }
+    ctx.putImageData(d,0,0);
+    img.src=canvas.toDataURL("image/png");
+    img.setAttribute("data-bg-removed","1");
+  }
   duck.classList.add("active");
   var x=-80, dir=1, speed=1.5, duckW=72;
   duck.style.left=x+"px";
