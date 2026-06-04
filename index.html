@@ -94,6 +94,7 @@ body{background:var(--dark);color:var(--text);font-family:var(--sans);font-weigh
 /* Track */
 .carousel-track{overflow:hidden;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.6);}
 .slides-inner{display:flex;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);will-change:transform;}
+.carousel-track.swiping-h{touch-action:none;}
 
 /* Single slide */
 .slide{flex:0 0 100%;display:flex;flex-direction:column;}
@@ -1028,6 +1029,12 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
           </div>
           <div class="slide">
             <div class="slide-img-wrap">
+              <img src="slike/57-MiFerata2.jpg" alt="Bukovik ferata" loading="lazy">
+            </div>
+            <div class="slide-caption"><p>njam</p></div>
+          </div>
+          <div class="slide">
+            <div class="slide-img-wrap">
               <img src="slike/53-MiVranica.jpg" alt="53-MiVranica.jpg" loading="lazy">
             </div>
             <div class="slide-caption"><p>Ti si moj vrh.</p></div>
@@ -1037,12 +1044,6 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
               <img src="slike/54-MiFerata.jpg" alt="54-MiFerata.jpg" loading="lazy">
             </div>
             <div class="slide-caption"><p>Ti si moja ljubav.</p></div>
-          </div>
-          <div class="slide">
-            <div class="slide-img-wrap">
-              <img src="slike/57-MiFerata2.jpg" alt="Bukovik ferata" loading="lazy">
-            </div>
-            <div class="slide-caption"><p>njam</p></div>
           </div>
           <div class="slide">
             <div class="slide-img-wrap">
@@ -1135,6 +1136,10 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
 
 <!-- FAB -->
 <div class="fab-wrap">
+  <div class="fab-btn" id="fab-moment">
+    <span class="fab-label">Dodaj momenat</span>
+    <button class="fab" onclick="sbOpenModal('moment',null)">📸</button>
+  </div>
   <div class="fab-btn" id="fab-krofna">
     <span class="fab-label">Dodaj krofnu</span>
     <button class="fab" onclick="sbOpenModal('krofna',null)">🍩</button>
@@ -1188,6 +1193,28 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
     </div>
     <button class="sb-btn" id="sb-p-btn" onclick="sbSavePut()">Sačuvaj</button>
     <button class="sb-cancel" onclick="sbCloseModal('put')">Odustani</button>
+  </div>
+</div>
+
+<!-- MODAL MOMENAT -->
+<div class="sb-modal" id="sb-modal-moment" onclick="sbBgClose(event,'moment')">
+  <div class="sb-box" style="position:relative">
+    <button class="sb-close" onclick="sbCloseModal('moment')">✕</button>
+    <p class="sb-title">📸 Novi momenat</p>
+    <div class="sb-field">
+      <label>Slika</label>
+      <div class="sb-img-preview" id="sb-m-preview" onclick="document.getElementById('sb-m-file').click()">
+        <span style="font-size:28px;opacity:0.4">📷</span>
+        <p style="font-size:12px;color:var(--text-muted)">Tapni za sliku</p>
+      </div>
+      <input type="file" id="sb-m-file" accept="image/*" style="display:none" onchange="sbPreviewMoment(this)">
+    </div>
+    <div class="sb-field">
+      <label>Opis (opcionalno)</label>
+      <input type="text" id="sb-m-opis" autocomplete="off" placeholder="npr. Naš prvi zalazak sunca">
+    </div>
+    <button class="sb-btn" id="sb-m-btn" onclick="sbSaveMoment()">Dodaj</button>
+    <button class="sb-cancel" onclick="sbCloseModal('moment')">Odustani</button>
   </div>
 </div>
 
@@ -1655,9 +1682,12 @@ async function sbQ(method, table, body, query) {
     var r = el.getBoundingClientRect();
     return r.top < window.innerHeight * 0.9 && r.bottom > 0;
   }
+  var carouselSec = document.querySelector('.carousel-section');
+  var fm = document.getElementById('fab-moment');
   function check() {
     if (fk) fk.classList.toggle('fab-visible', inView(ks));
     if (fp) fp.classList.toggle('fab-visible', inView(ms));
+    if (fm) fm.classList.toggle('fab-visible', carouselSec ? inView(carouselSec) : false);
   }
   window.addEventListener('scroll', check, {passive: true});
   check();
@@ -2122,6 +2152,83 @@ function makeSwipeable(rowEl, onSwipeLeft, onSwipeRight) {
   var el = document.getElementById('days-together');
   if (el) el.textContent = diff.toLocaleString('bs');
 })();
+
+/* ══ MOMENTS (carousel) ══ */
+var sbMomentFile = null;
+
+function sbPreviewMoment(inp) {
+  var f = inp.files[0];
+  if (!f) return;
+  sbMomentFile = f;
+  var url = URL.createObjectURL(f);
+  document.getElementById('sb-m-preview').innerHTML = '<img src="' + url + '">';
+}
+
+async function sbUploadMomentImg(file) {
+  var ext = file.name.split('.').pop() || 'jpg';
+  var fname = 'moment_' + Date.now() + '.' + ext;
+  var res = await fetch(SB_URL + '/storage/v1/object/krofne/' + fname, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': 'Bearer ' + SB_KEY,
+      'Content-Type': file.type || 'image/jpeg',
+      'x-upsert': 'true'
+    },
+    body: file
+  });
+  if (!res.ok) { console.error('Upload failed', res.status); return null; }
+  return SB_URL + '/storage/v1/object/public/krofne/' + fname;
+}
+
+async function sbSaveMoment() {
+  if (!sbMomentFile) { alert('Odaberite sliku!'); return; }
+  var opis = document.getElementById('sb-m-opis').value.trim();
+  var btn  = document.getElementById('sb-m-btn');
+  btn.disabled = true; btn.textContent = 'Uploading...';
+  var url = await sbUploadMomentImg(sbMomentFile);
+  if (!url) { btn.disabled = false; btn.textContent = 'Dodaj'; alert('Greška pri uploadu!'); return; }
+  var ok = await sbQ('POST', 'momenti', {slika_url: url, opis: opis || null});
+  btn.disabled = false; btn.textContent = 'Dodaj';
+  if (ok) {
+    sbCloseModal('moment');
+    sbMomentFile = null;
+    document.getElementById('sb-m-preview').innerHTML = '<span style="font-size:28px;opacity:0.4">📷</span><p style="font-size:12px;color:var(--text-muted)">Tapni za sliku</p>';
+    document.getElementById('sb-m-opis').value = '';
+    sbLoadMomenti();
+  } else alert('Greška, pokušaj ponovo.');
+}
+
+async function sbLoadMomenti() {
+  var data = await sbQ('GET', 'momenti', null, '?select=*&order=created_at.asc');
+  if (!data || !data.length) return;
+  var inner = document.getElementById('slides-inner');
+  if (!inner) return;
+  // Remove previously added DB slides (marked with data-db-moment)
+  inner.querySelectorAll('[data-db-moment]').forEach(function(el) { el.remove(); });
+  // Add new ones at the end
+  data.forEach(function(m) {
+    var slide = document.createElement('div');
+    slide.className = 'slide';
+    slide.setAttribute('data-db-moment', m.id);
+    slide.innerHTML =
+      '<div class="slide-img-wrap">' +
+        '<img src="' + m.slika_url + '" alt="' + (m.opis || 'momenat') + '" loading="lazy">' +
+      '</div>' +
+      '<div class="slide-caption"><p>' + (m.opis || '') + '</p></div>';
+    inner.appendChild(slide);
+  });
+  // Update total count
+  var total = inner.querySelectorAll('.slide').length;
+  var totEl = document.getElementById('tot-slides');
+  if (totEl) totEl.textContent = total;
+}
+
+// Load moments after main is visible
+document.getElementById('main').addEventListener('transitionend', function onceMoment() {
+  sbLoadMomenti();
+  this.removeEventListener('transitionend', onceMoment);
+});
 </script>
 </body>
 </html>
