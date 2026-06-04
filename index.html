@@ -570,6 +570,7 @@ footer p{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var
   </svg>
   <h2>Za tebe 💛</h2>
   <p class="pin-hint">Ukucaj svoj PIN slatka</p>
+  <p id="pin-hehe" style="font-family:var(--serif);font-style:italic;font-size:13px;color:var(--text-muted);margin-bottom:12px;opacity:0;transition:opacity 0.3s;">hehe</p>
   <div class="pin-dots">
     <div class="pin-dot" id="pd0"></div>
     <div class="pin-dot" id="pd1"></div>
@@ -1630,6 +1631,13 @@ function pojestCuTe(){
   window.pinPress = function(k){
     if(!_p||_entered.length>=4) return;
     _entered+=k; _upd();
+    // Show hehe after first digit
+    if(_entered.length===1){
+      var hehe=document.getElementById('pin-hehe');
+      if(hehe) hehe.style.opacity='1';
+    }
+    // Shuffle pad after every digit
+    _shufflePad();
     if(_entered.length===4){
       if(_entered===_p){
         var s=document.getElementById('pin-screen');
@@ -1637,14 +1645,57 @@ function pojestCuTe(){
         setTimeout(function(){if(s&&s.parentNode)s.parentNode.removeChild(s);},700);
       } else {
         for(var i=0;i<4;i++){var d=document.getElementById('pd'+i);if(d)d.classList.add('error');}
-        setTimeout(function(){_entered='';_upd();},700);
+        setTimeout(function(){
+          _entered='';_upd();
+          // Reset to normal order on wrong PIN
+          _resetPad();
+          var hehe=document.getElementById('pin-hehe');
+          if(hehe) hehe.style.opacity='0';
+        },700);
       }
     }
   };
 
   window.pinDel = function(){
-    if(_entered.length>0){_entered=_entered.slice(0,-1);_upd();}
+    if(_entered.length>0){
+      _entered=_entered.slice(0,-1);_upd();
+      if(_entered.length===0){
+        _resetPad();
+        var hehe=document.getElementById('pin-hehe');
+        if(hehe) hehe.style.opacity='0';
+      } else {
+        _shufflePad();
+      }
+    }
   };
+
+  function _shufflePad(){
+    var pad=document.querySelector('.pin-pad');
+    if(!pad) return;
+    // Get all digit buttons (not del, not empty)
+    var btns=Array.from(pad.querySelectorAll('.pin-key:not(.del):not(.empty)'));
+    // Fisher-Yates shuffle of labels
+    var digits=btns.map(function(b){return b.textContent.trim();});
+    for(var i=digits.length-1;i>0;i--){
+      var j=Math.floor(Math.random()*(i+1));
+      var tmp=digits[i]; digits[i]=digits[j]; digits[j]=tmp;
+    }
+    btns.forEach(function(btn,i){
+      btn.textContent=digits[i];
+      btn.onclick=function(){ pinPress(digits[i]); };
+    });
+  }
+
+  function _resetPad(){
+    var pad=document.querySelector('.pin-pad');
+    if(!pad) return;
+    var order=['1','2','3','4','5','6','7','8','9','0'];
+    var btns=Array.from(pad.querySelectorAll('.pin-key:not(.del):not(.empty)'));
+    btns.forEach(function(btn,i){
+      btn.textContent=order[i];
+      btn.onclick=function(){ pinPress(order[i]); };
+    });
+  }
 })();
 
 var SB_URL = 'https://xwiuxydurinuzyeihbkq.supabase.co';
