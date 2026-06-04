@@ -1315,16 +1315,17 @@ if(total>MAX_DOTS){
 }
 
 function goTo(idx){
-  if(idx<0||idx>=total)return;
+  const liveTotal=inner.querySelectorAll(".slide").length;
+  if(idx<0||idx>=liveTotal)return;
   cur=idx;
   inner.style.transform=`translateX(-${cur*100}%)`;
   document.getElementById("cur-slide").textContent=cur+1;
   document.getElementById("prev-btn").disabled=cur===0;
-  document.getElementById("next-btn").disabled=cur===total-1;
+  document.getElementById("next-btn").disabled=cur===liveTotal-1;
   const dots=dotsWrap.querySelectorAll(".dot");
   const dotIdx=cur<MAX_DOTS?cur:MAX_DOTS-1;
   dots.forEach((d,i)=>d.classList.toggle("active",i===dotIdx));
-  if(cur===total-1&&!quizShown){quizShown=true;sessionStorage.setItem('quizShown','1');setTimeout(openQuiz,1000);}
+  if(cur===liveTotal-1&&!quizShown){quizShown=true;sessionStorage.setItem('quizShown','1');setTimeout(openQuiz,1000);}
 }
 function carouselNext(){if(cur<total-1)goTo(cur+1);}
 function carouselPrev(){if(cur>0)goTo(cur-1);}
@@ -2212,10 +2213,30 @@ async function sbLoadMomenti() {
       '<div class="slide-caption"><p>' + (m.opis || '') + '</p></div>';
     inner.appendChild(slide);
   });
-  // Update total count
-  var total = inner.querySelectorAll('.slide').length;
+  // Update total count + dots
+  var liveCount = inner.querySelectorAll('.slide').length;
   var totEl = document.getElementById('tot-slides');
-  if (totEl) totEl.textContent = total;
+  if (totEl) totEl.textContent = liveCount;
+  // Rebuild dots if needed
+  var dotsWrap = document.getElementById('carousel-dots');
+  if (dotsWrap) {
+    dotsWrap.innerHTML = '';
+    var MAX = 9;
+    for (var di = 0; di < Math.min(liveCount, MAX); di++) {
+      var d = document.createElement('div');
+      d.className = 'dot' + (di === cur ? ' active' : '');
+      dotsWrap.appendChild(d);
+    }
+    if (liveCount > MAX) {
+      var m = document.createElement('div');
+      m.style.cssText = 'font-size:10px;color:var(--text-muted);align-self:center;padding-left:4px;';
+      m.textContent = '…';
+      dotsWrap.appendChild(m);
+    }
+  }
+  // Re-enable next button if we were on last slide before
+  var nextBtn = document.getElementById('next-btn');
+  if (nextBtn) nextBtn.disabled = cur >= liveCount - 1;
 }
 
 // Load moments after main is visible
