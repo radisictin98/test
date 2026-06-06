@@ -1959,10 +1959,9 @@ async function sbSavePut() {
   if (id) {
     ok = await sbQ('PATCH', 'putovanja', {destinacija: dest, km: km}, '?id=eq.' + id);
   } else {
-    // Get current max sort_order
-  var existing = await sbQ('GET', 'putovanja', null, '?select=sort_order&order=sort_order.desc&limit=1');
-  var nextOrder = (existing && existing.length && existing[0].sort_order) ? existing[0].sort_order + 1 : 999;
-  ok = await sbQ('POST', 'putovanja', {destinacija: dest, km: km, sort_order: nextOrder});
+    var existing = await sbQ('GET', 'putovanja', null, '?select=sort_order&order=sort_order.desc&limit=1');
+    var nextOrder = (existing && existing.length && existing[0].sort_order) ? existing[0].sort_order + 1 : 999;
+    ok = await sbQ('POST', 'putovanja', {destinacija: dest, km: km, sort_order: nextOrder});
   }
   btn.disabled = false; btn.textContent = 'Sacuvaj';
   if (ok) { sbCloseModal('put'); sbLoadPuts(); }
