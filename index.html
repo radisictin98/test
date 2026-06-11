@@ -2089,7 +2089,6 @@ async function sbLoadPuts() {
     item.className = 'mapa-item';
     item.style.cssText = 'opacity:1;transform:none;';
     item.innerHTML =
-      '<span class="drag-handle" title="Drži za premještanje">⠿</span>' +
       '<div class="mapa-dot"></div>' +
       '<div style="flex:1;min-width:0">' +
         '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:6px">' +
@@ -2114,7 +2113,7 @@ async function sbLoadPuts() {
         function() { sbDelPut(pp.id, pp.destinacija); }
       );
     })(p);
-    makeDraggable(row, 'mapa-list', sbSavePutsOrder);
+    // drag disabled for putovanja
   }
 }
 
